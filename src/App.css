@@ -1,0 +1,13 @@
+.navbar-nav .nav-link {
+  color: #555;
+  font-weight: 500;
+  transition: color 0.2s ease-in-out;
+}
+
+.navbar-nav .nav-link.active {
+  color: #0d6efd;
+}
+
+.navbar-icons .nav-link {
+    font-size: 1.2rem;
+}
