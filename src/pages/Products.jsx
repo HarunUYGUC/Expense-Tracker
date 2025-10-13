@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { allProducts } from '../data/products'; // Verilerimizi import ediyoruz
+import { allProducts } from '../data/products';
 
 function Products() {
   return (
@@ -26,7 +26,6 @@ function Products() {
                 <p className="card-text text-muted">
                   Last purchased from {product.latestPurchase.store} for ${product.latestPurchase.price.toFixed(2)}.
                 </p>
-                {/* Link bileşeni tüm kartı tıklanabilir yapmaz, bu yüzden bir buton kullanmak daha iyidir */}
                 <Link to={`/products/${product.id}`} className="btn btn-outline-primary mt-auto">
                   View Details
                 </Link>

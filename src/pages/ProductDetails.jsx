@@ -13,13 +13,13 @@ function ProductDetails() {
     setLoading(true);
     // Veri çekme işlemini simüle etmek için küçük bir gecikme
     const timer = setTimeout(() => {
-      const foundProduct = getProductById(productId); // ID'ye göre ürünü bul
+      const foundProduct = getProductById(productId);
       setProduct(foundProduct);
       setLoading(false);
     }, 500);
 
-    return () => clearTimeout(timer); // Bileşen unmount olduğunda timer'ı temizle
-  }, [productId]); // productId değiştiğinde bu effect'in yeniden çalışmasını sağla
+    return () => clearTimeout(timer);
+  }, [productId]); 
 
   if (loading) {
     return (

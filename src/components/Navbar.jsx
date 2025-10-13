@@ -1,9 +1,11 @@
 import React from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import { FaBell } from 'react-icons/fa';
-import UserAvatar from '../assets/user-avatar.jpg';
+import { useAuth } from '../context/AuthContext';
 
 function Navbar() {
+  const { user, logout } = useAuth();
+
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-white border-bottom">
       <div className="container-fluid px-4">
@@ -25,11 +27,38 @@ function Navbar() {
             </li>
           </ul>
 
-          <div className="d-flex align-items-center navbar-icons">
-             <a href="#" className="nav-link text-secondary me-3">
-                <FaBell />
-             </a>
-             <img src={UserAvatar} alt="User Avatar" style={{ width: '32px', height: '32px', borderRadius: '50%' }} />
+          <div className="d-flex align-items-center">
+            {user ? (
+              // KULLANICI GİRİŞ YAPMIŞSA
+              <>
+                <a href="#" className="nav-link text-secondary me-3" style={{ fontSize: '1.2rem' }}>
+                  <FaBell />
+                </a>
+                <img 
+                  src={user.avatar} 
+                  alt={user.name} 
+                  style={{ width: '32px', height: '32px', borderRadius: '50%' }} 
+                  title={`Logged in as ${user.name}`}
+                />
+                <button 
+                  onClick={logout} 
+                  className="btn btn-link text-decoration-none ms-2 nav-link-logout"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              // KULLANICI GİRİŞ YAPMAMIŞSA
+              <div className="d-flex gap-2">
+                <Link 
+                  to="/login" 
+                  className="btn btn-login-style nav-link-login"
+                >
+                  Log In
+                </Link>
+                <Link to="/signup" className="btn btn-primary">Sign Up</Link>
+              </div>
+            )}
           </div>
         </div>
       </div>

@@ -1,4 +1,3 @@
-// Tüm ürünleri içeren dizi
 export const allProducts = [
   {
     id: 1,
@@ -26,8 +25,6 @@ export const allProducts = [
   }
 ];
 
-// ID'ye göre tek bir ürünü getiren fonksiyon
 export const getProductById = (id) => {
-  // Gelen id string olabileceğinden Number'a çeviriyoruz
   return allProducts.find(product => product.id === Number(id));
 };
