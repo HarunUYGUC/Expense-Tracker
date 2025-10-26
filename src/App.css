@@ -38,3 +38,80 @@
   justify-content: center;
   background-color: #e9ecef;
 }
+
+.dashboard-page-wrapper {
+  background-color: #f8f9fa;
+  min-height: calc(100vh - 57px);
+}
+
+.quick-link-card {
+  transition: all 0.2s ease-in-out;
+}
+.quick-link-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.quick-link-icon {
+  font-size: 1.5rem;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #e7f1ff;
+  color: #0d6efd; 
+}
+
+.content-blurred {
+  filter: blur(5px);
+  pointer-events: none;
+  user-select: none;
+}
+
+.modal {
+  z-index: 1050;
+}
+.modal-backdrop {
+  z-index: 1040;
+}
+
+/* Receipts sayfasının arka planı */
+.receipts-page-wrapper {
+  background-color: #f8f9fa;
+  min-height: calc(100vh - 57px);
+}
+
+/* Sürükle-bırak (Dropzone) alanı */
+.dropzone-container {
+  border: 2px dashed #ced4da; 
+  border-radius: 8px;
+  background-color: #ffffff;
+  padding: 4rem;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.dropzone-active {
+  background-color: #e7f1ff;
+  border-color: #0d6efd;
+}
+
+.dropzone-icon {
+  font-size: 3rem;
+  color: #adb5bd;
+}
+
+.dropzone-link-text {
+  color: #0d6efd;
+  font-weight: 500;
+}
+
+.receipt-list-thumbnail {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 8px;
+}
