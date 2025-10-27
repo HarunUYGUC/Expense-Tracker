@@ -9,10 +9,28 @@ function Navbar() {
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-white border-bottom">
       <div className="container-fluid px-4">
-        <Link className="navbar-brand fw-bold" to="/">Expense Tracker</Link>
         
-        <div className="collapse navbar-collapse ms-5">
-          <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+        {/* Marka */}
+        <Link className="navbar-brand fw-bold" to="/">Expense Tracker</Link>
+
+        {/* MOBİL TOGGLER (HAMBURGER) BUTONU */}
+        <button 
+          className="navbar-toggler" 
+          type="button" 
+          data-bs-toggle="collapse"
+          data-bs-target="#mainNavbar"
+          aria-controls="mainNavbar"
+          aria-expanded="false" 
+          aria-label="Toggle navigation"
+        >
+          <span className="navbar-toggler-icon"></span>
+        </button>
+
+        {/* COLLAPSIBLE WRAPPER */}
+        <div className="collapse navbar-collapse" id="mainNavbar">
+          
+          {/* Sayfa Linkleri */}
+          <ul className="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-5">
             <li className="nav-item">
               <NavLink className="nav-link" to="/dashboard">Dashboard</NavLink>
             </li>
@@ -27,9 +45,9 @@ function Navbar() {
             </li>
           </ul>
 
-          <div className="d-flex align-items-center">
+          {/*  Log In, Sign Up Bölümü */}
+          <div className="d-flex align-items-center mt-3 mt-lg-0">
             {user ? (
-              // KULLANICI GİRİŞ YAPMIŞSA
               <>
                 <a href="#" className="nav-link text-secondary me-3" style={{ fontSize: '1.2rem' }}>
                   <FaBell />
@@ -48,8 +66,7 @@ function Navbar() {
                 </button>
               </>
             ) : (
-              // KULLANICI GİRİŞ YAPMAMIŞSA
-              <div className="d-flex gap-2">
+              <div className="d-grid gap-2 d-lg-flex">
                 <Link 
                   to="/login" 
                   className="btn btn-login-style nav-link-login"
@@ -60,7 +77,8 @@ function Navbar() {
               </div>
             )}
           </div>
-        </div>
+        </div> 
+        {/* Wrapper Bitişi */}
       </div>
     </nav>
   );

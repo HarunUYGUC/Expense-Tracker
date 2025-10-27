@@ -14,7 +14,7 @@ function LoginPage() {
     setError('');
     const isLoggedIn = login(email, password);
     if (isLoggedIn) {
-      navigate('/products');
+      navigate('/dashboard');
     } else {
       setError('Invalid email or password');
     }
