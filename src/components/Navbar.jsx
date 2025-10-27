@@ -2,18 +2,23 @@ import React from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import { FaBell } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 
 function Navbar() {
   const { user, logout } = useAuth();
+  const { theme } = useTheme();
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-light bg-white border-bottom">
+    <nav 
+      className={`navbar navbar-expand-lg border-bottom ${theme === 'dark' ? 'navbar-dark' : 'navbar-light'}`}
+      style={{ backgroundColor: 'var(--bs-tertiary-bg)' }}
+    >
       <div className="container-fluid px-4">
         
-        {/* Marka */}
+        {/* Marka (Logo) */}
         <Link className="navbar-brand fw-bold" to="/">Expense Tracker</Link>
 
-        {/* MOBİL TOGGLER (HAMBURGER) BUTONU */}
+        {/* Mobil Toggler (Hamburger) Butonu */}
         <button 
           className="navbar-toggler" 
           type="button" 
@@ -26,9 +31,9 @@ function Navbar() {
           <span className="navbar-toggler-icon"></span>
         </button>
 
-        {/* COLLAPSIBLE WRAPPER */}
+        {/* Çökebilir (Collapsible) Wrapper */}
         <div className="collapse navbar-collapse" id="mainNavbar">
-          
+
           {/* Sayfa Linkleri */}
           <ul className="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-5">
             <li className="nav-item">

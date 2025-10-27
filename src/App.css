@@ -1,5 +1,4 @@
 .navbar-nav .nav-link {
-  color: #555;
   font-weight: 500;
   transition: color 0.2s ease-in-out;
 }
@@ -115,3 +114,65 @@
   object-fit: cover;
   border-radius: 8px;
 }
+
+/* Karanlık Mod Başlangıç */
+.dashboard-page-wrapper,
+.receipts-page-wrapper {
+  background-color: var(--bs-body-bg);
+  min-height: calc(100vh - 57px);
+}
+
+.login-page-wrapper {
+  min-height: calc(100vh - 57px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bs-tertiary-bg);
+}
+
+.quick-link-icon {
+  font-size: 1.5rem;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bs-primary-bg-subtle);
+  color: var(--bs-primary-text-emphasis);
+}
+
+.dropzone-container {
+  border: 2px dashed var(--bs-border-color-translucent);
+  border-radius: 8px;
+  background-color: var(--bs-body-bg);
+  padding: 4rem;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.dropzone-active {
+  background-color: var(--bs-primary-bg-subtle);
+  border-color: var(--bs-primary);
+}
+
+.btn-login-style {
+  background-color: var(--bs-primary-bg-subtle);
+  color: var(--bs-primary-text-emphasis);
+  border-color: transparent;
+}
+
+.btn-login-style:hover {
+  background-color: var(--bs-primary-border-subtle);
+  color: var(--bs-primary-text-emphasis);
+}
+
+.nav-link-logout {
+  color: var(--bs-primary-text-emphasis);
+}
+
+.nav-link-logout:hover {
+  color: var(--bs-primary);
+}
+/* Karanlık Mod Bitiş */
