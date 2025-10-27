@@ -10,38 +10,6 @@
 .navbar-icons .nav-link {
     font-size: 1.2rem;
 }
-.nav-link-login,
-.nav-link-logout {
-  color: #0d6efd;
-  font-weight: 500;
-}
-
-.btn-login-style {
-  background-color: #e7f1ff;
-  border-color: transparent;
-}
-
-.btn-login-style:hover {
-  background-color: #cfe2ff;
-  color: #0a58ca;
-}
-
-.nav-link-logout:hover {
-  color: #0a58ca; 
-}
-
-.login-page-wrapper {
-  min-height: calc(100vh - 57px); /* Navbar'ın yüksekliğini hesaptan düşerek tam ekran kaplamasını sağlıyoruz */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #e9ecef;
-}
-
-.dashboard-page-wrapper {
-  background-color: #f8f9fa;
-  min-height: calc(100vh - 57px);
-}
 
 .quick-link-card {
   transition: all 0.2s ease-in-out;
@@ -49,18 +17,6 @@
 .quick-link-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-}
-
-.quick-link-icon {
-  font-size: 1.5rem;
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #e7f1ff;
-  color: #0d6efd; 
 }
 
 .content-blurred {
@@ -74,28 +30,6 @@
 }
 .modal-backdrop {
   z-index: 1040;
-}
-
-/* Receipts sayfasının arka planı */
-.receipts-page-wrapper {
-  background-color: #f8f9fa;
-  min-height: calc(100vh - 57px);
-}
-
-/* Sürükle-bırak (Dropzone) alanı */
-.dropzone-container {
-  border: 2px dashed #ced4da; 
-  border-radius: 8px;
-  background-color: #ffffff;
-  padding: 4rem;
-  text-align: center;
-  cursor: pointer;
-  transition: background-color 0.2s ease-in-out;
-}
-
-.dropzone-active {
-  background-color: #e7f1ff;
-  border-color: #0d6efd;
 }
 
 .dropzone-icon {
@@ -142,6 +76,7 @@
   color: var(--bs-primary-text-emphasis);
 }
 
+/* Sürükle-bırak (Dropzone) alanı */
 .dropzone-container {
   border: 2px dashed var(--bs-border-color-translucent);
   border-radius: 8px;
