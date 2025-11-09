@@ -9,9 +9,9 @@ import Products from './pages/Products';
 import ProductDetails from './pages/ProductDetails';
 import LoginPage from './pages/LoginPage';
 import Settings from './pages/Settings';
+import AnalyzeExpenses from './pages/AnalyzeExpenses';
 
 const Stores = () => <div className="container mt-4"><h1>Stores Page</h1></div>;
-const AnalyzeExpenses = () => <div className="container mt-4"><h1>Analyze Expenses Page</h1></div>;
 const Reports = () => <div className="container mt-4"><h1>Reports Page</h1></div>;
 
 function App() {
