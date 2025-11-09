@@ -7,11 +7,12 @@ import Dashboard from './pages/Dashboard';
 import Receipts from './pages/Receipts';
 import Products from './pages/Products';
 import ProductDetails from './pages/ProductDetails';
+import Stores from './pages/Stores';
+import StoreDetails from './pages/StoreDetails';
 import LoginPage from './pages/LoginPage';
-import Settings from './pages/Settings';
 import AnalyzeExpenses from './pages/AnalyzeExpenses';
+import Settings from './pages/Settings';
 
-const Stores = () => <div className="container mt-4"><h1>Stores Page</h1></div>;
 const Reports = () => <div className="container mt-4"><h1>Reports Page</h1></div>;
 
 function App() {
@@ -27,6 +28,7 @@ function App() {
           <Route path="/products" element={<Products />} />
           <Route path="/products/:productId" element={<ProductDetails />} />
           <Route path="/stores" element={<Stores />} />
+          <Route path="/stores/:storeId" element={<StoreDetails />} />
           <Route path="/login" element={<LoginPage />} />
           
           {/* Quick Links */}
