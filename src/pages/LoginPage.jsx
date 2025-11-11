@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 function LoginPage() {
   const [email, setEmail] = useState('');
@@ -21,12 +21,12 @@ function LoginPage() {
   };
 
   return (
-    <div className="login-page-wrapper">
+    <div className="login-page-wrapper py-5">
       <div className="container">
         <div className="row justify-content-center">
           <div className="col-md-6 col-lg-4">
             <div className="card shadow-sm border-0">
-              <div className="card-body p-4">
+              <div className="card-body p-4 p-md-5">
                 <h2 className="card-title text-center mb-4">Log In</h2>
                 <form onSubmit={handleSubmit}>
                   {error && <div className="alert alert-danger">{error}</div>}
@@ -57,7 +57,9 @@ function LoginPage() {
                   </div>
                 </form>
                 <div className="text-center mt-3">
-                  <small>Test with: user@example.com / password123</small>
+                  <small className="text-muted">
+                    Don't have an account? <Link to="/signup" className="fw-medium text-decoration-none">Sign Up</Link>
+                  </small>
                 </div>
               </div>
             </div>

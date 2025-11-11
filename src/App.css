@@ -111,3 +111,24 @@
   color: var(--bs-primary);
 }
 /* Karanlık Mod Bitiş */
+
+.input-group-password-icon {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: var(--bs-secondary-color);
+}
+
+.form-control.is-invalid {
+  border-color: var(--bs-danger);
+  & + .input-group-password-icon {
+    color: var(--bs-danger);
+  }
+}
+
+.invalid-feedback-text {
+  color: var(--bs-danger);
+  font-size: 0.875em;
+}

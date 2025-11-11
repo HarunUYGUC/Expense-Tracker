@@ -10,6 +10,7 @@ import ProductDetails from './pages/ProductDetails';
 import Stores from './pages/Stores';
 import StoreDetails from './pages/StoreDetails';
 import LoginPage from './pages/LoginPage';
+import SignUpPage from './pages/SignUpPage';
 import AnalyzeExpenses from './pages/AnalyzeExpenses';
 import Settings from './pages/Settings';
 
@@ -30,6 +31,7 @@ function App() {
           <Route path="/stores" element={<Stores />} />
           <Route path="/stores/:storeId" element={<StoreDetails />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignUpPage />} />
           
           {/* Quick Links */}
           <Route path="/analyze" element={<AnalyzeExpenses />} />
