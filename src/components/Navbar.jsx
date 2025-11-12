@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, Link } from 'react-router-dom';
-import { FaBell } from 'react-icons/fa';
+import { FaBell, FaUserCircle } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 
@@ -57,12 +57,10 @@ function Navbar() {
                 <a href="#" className="nav-link text-secondary me-3" style={{ fontSize: '1.2rem' }}>
                   <FaBell />
                 </a>
-                <img 
-                  src={user.avatar} 
-                  alt={user.name} 
-                  style={{ width: '32px', height: '32px', borderRadius: '50%' }} 
-                  title={`Logged in as ${user.name}`}
-                />
+                <span className="navbar-text me-2 d-none d-sm-inline" style={{ fontSize: '0.9rem' }}>
+                  {user.email}
+                </span>
+                <FaUserCircle className="fs-4 text-secondary me-3" title={`Logged in as ${user.email}`} />
                 <button 
                   onClick={logout} 
                   className="btn btn-link text-decoration-none ms-2 nav-link-logout"
