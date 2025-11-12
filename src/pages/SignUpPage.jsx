@@ -37,7 +37,7 @@ function SignUpPage() {
     try {
       setLoading(true);
       await signup(email, password);
-      navigate('/login');
+      navigate('/');
     } catch (err) {
       switch (err.code) {
         case 'auth/email-already-in-use':
