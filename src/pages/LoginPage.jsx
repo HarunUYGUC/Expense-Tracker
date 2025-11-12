@@ -1,23 +1,30 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    const isLoggedIn = login(email, password);
-    if (isLoggedIn) {
-      navigate('/dashboard');
-    } else {
+    
+    try {
+      setLoading(true); 
+      await login(email, password);
+      navigate('/'); 
+    } catch (err) {
       setError('Invalid email or password');
+      console.error(err);
     }
+    setLoading(false); 
   };
 
   return (
@@ -41,19 +48,28 @@ function LoginPage() {
                       required
                     />
                   </div>
+                  
                   <div className="mb-3">
                     <label htmlFor="password" className="form-label">Password</label>
-                    <input
-                      type="password"
-                      className="form-control"
-                      id="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                    />
+                    <div className="position-relative">
+                      <input
+                        type={showPassword ? 'text' : 'password'}
+                        className="form-control"
+                        id="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                      />
+                      <span onClick={() => setShowPassword(!showPassword)} className="input-group-password-icon">
+                        {showPassword ? <FaEye /> : <FaEyeSlash />}
+                      </span>
+                    </div>
                   </div>
+
                   <div className="d-grid">
-                     <button type="submit" className="btn btn-primary">Log In</button>
+                     <button type="submit" className="btn btn-primary" disabled={loading}>
+                       {loading ? 'Logging in...' : 'Log In'}
+                     </button>
                   </div>
                 </form>
                 <div className="text-center mt-3">
