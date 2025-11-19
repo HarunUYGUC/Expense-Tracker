@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FaPlus } from 'react-icons/fa';
+import { FaPlus, FaEdit } from 'react-icons/fa';
 import { dashboardData } from '../data/dashboardData';
 import ImageModal from '../components/ImageModal';
 
@@ -29,9 +29,17 @@ function Dashboard() {
         {/* BAŞLIK BÖLÜMÜ */}
         <div className="d-flex justify-content-between align-items-center mb-4">
           <h1 className="display-6 fw-bold">Dashboard</h1>
-          <Link to="/receipts" className="btn btn-primary d-flex align-items-center">
-            <FaPlus className="me-2" /> New Scan
-          </Link>
+          <div className="d-flex gap-2">
+             {/* New Scan Butonu */}
+             <Link to="/receipts" className="btn btn-primary d-flex align-items-center">
+                <FaPlus className="me-2" /> New Scan
+             </Link>
+
+             {/* New Text Butonu */}
+             <Link to="/texts" className="btn btn-secondary d-flex align-items-center">
+                <FaEdit className="me-2" /> New Text
+             </Link>
+          </div>
         </div>
 
         {/* RECENT SCANS BÖLÜMÜ */}
