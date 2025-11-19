@@ -296,7 +296,7 @@ function ManualEntry() {
             
             <div className="card shadow-sm border-0">
                 <div className="list-group list-group-flush">
-                    <div className="list-group-item bg-light text-muted fw-bold small text-uppercase d-flex align-items-center">
+                    <div className="list-group-item bg-body-tertiary text-muted fw-bold small text-uppercase d-flex align-items-center">
                         <div style={{ flex: 2 }}>Market Name</div>
                         <div style={{ flex: 1 }}>Date & Time</div> 
                         <div style={{ flex: 1, textAlign: 'right' }}>Total Price</div>
@@ -318,7 +318,7 @@ function ManualEntry() {
                             style={{ cursor: 'pointer' }}
                             onClick={() => handleRowClick(entry)}
                         >
-                            <div style={{ flex: 2 }} className="fw-bold text-dark">
+                            <div style={{ flex: 2 }} className="fw-bold">
                                 {entry.fileName}
                             </div>
                             
