@@ -1,0 +1,79 @@
+import React from 'react';
+
+const ReceiptDetailModal = ({ show, onClose, receipt }) => {
+  if (!show || !receipt) return null;
+
+  return (
+    <>
+      <div 
+        className="modal-backdrop fade show" 
+        style={{ zIndex: 1040, backgroundColor: 'rgba(0,0,0,0.5)' }}
+        onClick={onClose}
+      ></div>
+
+      <div 
+        className="modal fade show d-block" 
+        tabIndex="-1" 
+        style={{ zIndex: 1050 }}
+        onClick={onClose}
+      >
+        <div 
+          className="modal-dialog modal-dialog-centered modal-lg" 
+          onClick={e => e.stopPropagation()}
+        >
+          <div className="modal-content shadow">
+            <div className="modal-header bg-light">
+              <div>
+                <h5 className="modal-title fw-bold">{receipt.fileName}</h5>
+                <small className="text-muted">{receipt.date}</small>
+              </div>
+              <button type="button" className="btn-close" onClick={onClose}></button>
+            </div>
+            
+            <div className="modal-body p-4">
+              <h6 className="fw-bold mb-3">Items Purchased</h6>
+              <div className="table-responsive">
+                <table className="table table-bordered table-hover">
+                  <thead className="table-light">
+                    <tr>
+                      <th>Type</th>
+                      <th>Brand</th>
+                      <th>Name</th>
+                      <th>Size</th>
+                      <th className="text-end">Price</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {receipt.items && receipt.items.map((item, index) => (
+                      <tr key={index}>
+                        <td>{item.type}</td>
+                        <td>{item.brand}</td>
+                        <td>{item.name || '-'}</td>
+                        <td>{item.size || '-'}</td>
+                        <td className="text-end fw-bold">${parseFloat(item.price).toFixed(2)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                  <tfoot className="table-light">
+                    <tr>
+                      <td colSpan="4" className="text-end fw-bold">Total</td>
+                      <td className="text-end fw-bold fs-5 text-primary">
+                        ${receipt.price.toFixed(2)}
+                      </td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </div>
+
+            <div className="modal-footer border-0">
+              <button type="button" className="btn btn-secondary" onClick={onClose}>Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default ReceiptDetailModal;

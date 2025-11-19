@@ -43,6 +43,9 @@ function Navbar() {
               <NavLink className="nav-link" to="/receipts">Receipts</NavLink>
             </li>
             <li className="nav-item">
+              <NavLink className="nav-link" to="/texts">Texts</NavLink>
+            </li>
+            <li className="nav-item">
               <NavLink className="nav-link" to="/products">Products</NavLink>
             </li>
             <li className="nav-item">

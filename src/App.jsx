@@ -5,6 +5,7 @@ import Navbar from './components/Navbar';
 
 import Dashboard from './pages/Dashboard';
 import Receipts from './pages/Receipts';
+import ManualEntry from './pages/ManualEntry';
 import Products from './pages/Products';
 import ProductDetails from './pages/ProductDetails';
 import Stores from './pages/Stores';
@@ -26,6 +27,7 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           
           <Route path="/receipts" element={<Receipts />} />
+          <Route path="/texts" element={<ManualEntry />} />
           <Route path="/products" element={<Products />} />
           <Route path="/products/:productId" element={<ProductDetails />} />
           <Route path="/stores" element={<Stores />} />
