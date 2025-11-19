@@ -104,7 +104,7 @@ function Receipts() {
 
           {/* TÜM FİŞLERİN LİSTESİ  */}
           <div className="mb-5">
-            <h3 className="h5 mb-3">All Scanned Receipts</h3>
+            <h3 id="scanned-section" className="h5 mb-3">All Scanned Receipts</h3>
             <div className="card border-0 shadow-sm">
               <div className="list-group list-group-flush">
                 {[...dashboardData.recentScans].reverse().map(receipt => (

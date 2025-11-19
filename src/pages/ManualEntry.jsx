@@ -290,7 +290,7 @@ function ManualEntry() {
           </div>
 
           <div className="mt-5 mb-5">
-            <h3 className="h5 mb-3 fw-bold d-flex align-items-center">
+            <h3 id="manual-section" className="h5 mb-3 fw-bold d-flex align-items-center">
                 <FaListAlt className="me-2 text-muted" /> All Manual Entries
             </h3>
             
