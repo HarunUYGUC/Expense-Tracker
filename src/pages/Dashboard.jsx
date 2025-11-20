@@ -29,7 +29,7 @@ function Dashboard() {
         {/* BAŞLIK BÖLÜMÜ */}
         <div className="d-flex justify-content-between align-items-center mb-4">
           <h1 className="display-6 fw-bold">Dashboard</h1>
-          <div className="d-flex gap-2">
+          <div className="d-flex flex-column flex-sm-row gap-2">
              {/* New Scan Butonu */}
              <Link to="/receipts" className="btn btn-primary d-flex align-items-center">
                 <FaPlus className="me-2" /> New Scan

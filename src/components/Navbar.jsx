@@ -60,7 +60,7 @@ function Navbar() {
                 <a href="#" className="nav-link text-secondary me-3" style={{ fontSize: '1.2rem' }}>
                   <FaBell />
                 </a>
-                <span className="navbar-text me-2 d-none d-sm-inline" style={{ fontSize: '0.9rem' }}>
+                <span className="navbar-text me-2" style={{ fontSize: '0.9rem' }}>
                   {user.email}
                 </span>
                 <FaUserCircle className="fs-4 text-secondary me-3" title={`Logged in as ${user.email}`} />
