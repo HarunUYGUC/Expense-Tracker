@@ -53,7 +53,7 @@ function Navbar() {
             </li>
           </ul>
 
-          {/* Log In, Sign Up Bölümü */}
+          {/* Sağ Taraf (Kullanıcı İşlemleri) */}
           <div className="d-flex align-items-center mt-3 mt-lg-0">
             {user ? (
               // KULLANICI GİRİŞ YAPMIŞSA
@@ -61,22 +61,30 @@ function Navbar() {
                 <a href="#" className="nav-link text-secondary me-3" style={{ fontSize: '1.2rem' }}>
                   <FaBell />
                 </a>
-                <span className="navbar-text me-2" style={{ fontSize: '0.9rem' }}>
-                  {user.email}
-                </span>
-                <FaUserCircle className="fs-4 text-secondary me-3" title={`Logged in as ${user.email}`} />
-                <button 
-                  onClick={logout} 
-                  className="btn btn-link text-decoration-none ms-2 nav-link-logout"
-                >
-                  Logout
+                
+                {/* Kullanıcı Bilgisi */}
+                <div className="d-flex align-items-center me-3">
+                    <span className="navbar-text me-2 fw-medium" style={{ fontSize: '0.9rem' }}>
+                    {user.email}
+                    </span>
+                    <FaUserCircle className="fs-4 text-secondary" title={`Logged in as ${user.email}`} />
+                </div>
+
+                {/* LOGOUT BUTONU */}
+                <button className="logout-btn" onClick={logout} title="Logout">
+                  <div className="logout-sign">
+                    <svg viewBox="0 0 512 512">
+                      <path d="M377.9 105.9L500.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L377.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1-128 0c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM160 96L96 96c-17.7 0-32 14.3-32 32l0 256c0 17.7 14.3 32 32 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-64 0c-53 0-96-43-96-96L0 128C0 75 43 32 96 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32z"></path>
+                    </svg>
+                  </div>
+                  <div className="logout-text">Logout</div>
                 </button>
               </>
             ) : (
               // KULLANICI GİRİŞ YAPMAMIŞSA
               <div className="d-flex align-items-center gap-3">
                 
-                {/* --- ÖZEL LOGIN BUTONU --- */}
+                {/* ÖZEL LOGIN BUTONU */}
                 <Link 
                   to="/login" 
                   className="user-profile" 
@@ -99,8 +107,7 @@ function Navbar() {
                   </div>
                 </Link>
 
-                {/* --- ÖZEL SIGN UP BUTONU --- */}
-                {/* İkon yok, sadece yazı, Mavi Renk */}
+                {/* ÖZEL SIGN UP BUTONU */}
                 <Link 
                   to="/signup" 
                   className="user-profile-primary"
