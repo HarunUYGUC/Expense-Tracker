@@ -132,3 +132,189 @@
   color: var(--bs-danger);
   font-size: 0.875em;
 }
+
+/* Settings.css */
+.switch-container {
+  display: flex;
+  align-items: center;
+}
+
+.switch-input {
+  display: none;
+}
+
+.switch-label {
+  width: 60px;          
+  height: 30px;         
+  background-color: #ffffff;
+  border-radius: 15px;   
+  position: relative;
+  cursor: pointer;
+  
+  box-shadow: 
+    inset 0 0 2px 2px rgba(255, 255, 255, 1),
+    inset 0 0 10px 1px rgba(0, 0, 0, 0.488), 
+    5px 10px 15px rgba(0, 0, 0, 0.096),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.3);
+    
+  display: flex;
+  align-items: center;
+  transition: transform 0.4s;
+}
+
+.switch-label:hover {
+  transform: perspective(100px) rotateX(5deg) rotateY(-5deg);
+}
+
+.switch-input:checked ~ .switch-label:hover {
+  transform: perspective(100px) rotateX(-5deg) rotateY(5deg);
+}
+
+.switch-label::before {
+  content: "";
+  position: absolute;
+  height: 20px;          
+  width: 20px;           
+  border-radius: 50%;
+  left: 5px;         
+  
+  background-color: #000000;
+  background-image: linear-gradient(
+    130deg,
+    #757272 10%,
+    #ffffff 11%,
+    #726f6f 62%
+  );
+  
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.3), 5px 5px 5px rgba(0, 0, 0, 0.3);
+  transition: 0.4s;
+}
+
+.switch-input:checked ~ .switch-label::before {
+  left: 35px; 
+  background-color: #000000;
+  background-image: linear-gradient(315deg, #000000 0%, #414141 70%);
+}
+/* Settings.css Finished */
+
+/* PULSE BUTON ANİMASYONU */
+.btn-pulse {
+  border: none;
+  border-radius: 20px;
+  background-size: 100% auto;
+  font-family: inherit;
+  transition: 0.5s;
+  text-decoration: none !important; 
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Hover Efekti (Ortak) */
+.btn-pulse:hover {
+  background-position: right center;
+  background-size: 200% auto;
+  -webkit-animation: pulse512 1.5s infinite;
+  animation: pulse512 1.5s infinite;
+  color: white !important; 
+}
+
+/* New Scan */
+.btn-pulse-primary {
+  color: #fff;
+  background-image: linear-gradient(30deg, #0d6efd, #0dcaf0); 
+}
+
+/* New Text */
+.btn-pulse-secondary {
+  color: #fff; 
+  background-image: linear-gradient(30deg, #6c757d, #aab2bd);
+}
+
+@keyframes pulse512 {
+  0% {
+    box-shadow: 0 0 0 0 rgba(13, 202, 240, 0.4); 
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(13, 202, 240, 0); 
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(13, 202, 240, 0);
+  }
+}
+/* PULSE BUTON ANİMASYONU BİTTİ */
+
+/* User Login Button Styles */
+.user-profile {
+  background-color: var(--bs-primary-bg-subtle);
+  color: var(--bs-primary-text-emphasis);
+  border: 1px solid transparent;
+  
+  /* Boyut ve Yapı */
+  padding: 0.5rem 1rem;
+  border-radius: 8px; 
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none !important;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+  height: 45px; 
+}
+
+.user-profile:hover,
+.user-profile:focus {
+  background-color: var(--bs-primary-border-subtle);
+  color: var(--bs-primary-text-emphasis);
+  transform: translateY(-2px); 
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  outline: none;
+}
+
+/* Login İç Yapısı */
+.user-profile-inner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.user-profile-inner svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
+.user-profile-inner p {
+  margin: 0;
+}
+
+/* Sign Up Button */
+.user-profile-primary {
+  /* Renkler: Canlı Mavi (Primary) */
+  background-color: var(--bs-primary);
+  color: white !important; 
+  border: 1px solid transparent;
+
+  /* Boyut ve Yapı (.user-profile ile aynı) */
+  padding: 0.5rem 1.5rem; 
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none !important;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+  font-weight: 600;
+  height: 45px; 
+}
+
+.user-profile-primary:hover,
+.user-profile-primary:focus {
+  background-color: #0b5ed7; 
+  color: white !important;
+  transform: translateY(-2px); 
+  box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+  outline: none;
+}
+/* User Login Button Styles Finished */

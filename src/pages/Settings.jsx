@@ -11,28 +11,35 @@ function Settings() {
       {/* Görünüm Ayarları Kartı */}
       <div className="card border-0 shadow-sm mb-4">
         <div className="card-body p-4">
-          <h5 className="card-title mb-3">Appearance</h5>
           
-          <div className="form-check form-switch fs-5">
+          <div className="d-flex justify-content-between align-items-center mb-3">
+             <h5 className="card-title mb-0">Appearance</h5>
+             {/* Durumu metin olarak göstermek isterseniz (Opsiyonel) */}
+             <span className="badge bg-secondary">{theme === 'dark' ? 'Dark Mode' : 'Light Mode'}</span>
+          </div>
+          
+          {/* ÖZEL BUTON BAŞLANGIÇ */}
+          <div className="switch-container">
             <input
-              className="form-check-input"
               type="checkbox"
-              role="switch"
               id="darkModeToggle"
+              className="switch-input"
               checked={theme === 'dark'} 
               onChange={toggleTheme} 
             />
-            <label className="form-check-label" htmlFor="darkModeToggle">
-              Dark Mode
+            <label htmlFor="darkModeToggle" className="switch-label">
+              {/* İçerik boş, CSS ::before ile dolduruluyor */}
             </label>
           </div>
-          <p className="text-muted small mt-2">
+          {/* ÖZEL BUTON BİTİŞ */}
+
+          <p className="text-muted small mt-3">
             Toggle to switch between light and dark themes.
           </p>
         </div>
       </div>
 
-      {/* İleride buraya başka ayarlar eklenecek */}
+      {/* Account Ayarları (Aynen Kalıyor) */}
       <div className="card border-0 shadow-sm">
         <div className="card-body p-4">
           <h5 className="card-title mb-3">Account</h5>

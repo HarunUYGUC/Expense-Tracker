@@ -29,14 +29,14 @@ function Dashboard() {
         {/* BAŞLIK BÖLÜMÜ */}
         <div className="d-flex justify-content-between align-items-center mb-4">
           <h1 className="display-6 fw-bold">Dashboard</h1>
+          {/* BUTON GRUBU (Pulse Animasyonlu) */}
           <div className="d-flex flex-column flex-sm-row gap-2">
-             {/* New Scan Butonu */}
-             <Link to="/receipts" className="btn btn-primary d-flex align-items-center">
+             {/* New Scan */}
+             <Link to="/receipts" className="btn btn-pulse btn-pulse-primary px-4 py-2">
                 <FaPlus className="me-2" /> New Scan
              </Link>
-
-             {/* New Text Butonu */}
-             <Link to="/texts" className="btn btn-secondary d-flex align-items-center">
+             {/* New Text */}
+             <Link to="/texts" className="btn btn-pulse btn-pulse-secondary px-4 py-2">
                 <FaEdit className="me-2" /> New Text
              </Link>
           </div>

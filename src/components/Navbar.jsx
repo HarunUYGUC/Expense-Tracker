@@ -53,9 +53,10 @@ function Navbar() {
             </li>
           </ul>
 
-          {/*  Log In, Sign Up Bölümü */}
+          {/* Log In, Sign Up Bölümü */}
           <div className="d-flex align-items-center mt-3 mt-lg-0">
             {user ? (
+              // KULLANICI GİRİŞ YAPMIŞSA
               <>
                 <a href="#" className="nav-link text-secondary me-3" style={{ fontSize: '1.2rem' }}>
                   <FaBell />
@@ -72,14 +73,42 @@ function Navbar() {
                 </button>
               </>
             ) : (
-              <div className="d-grid gap-2 d-lg-flex">
+              // KULLANICI GİRİŞ YAPMAMIŞSA
+              <div className="d-flex align-items-center gap-3">
+                
+                {/* --- ÖZEL LOGIN BUTONU --- */}
                 <Link 
                   to="/login" 
-                  className="btn btn-login-style nav-link-login"
+                  className="user-profile" 
+                  aria-label="User Login Button"
+                  role="button"
                 >
-                  Log In
+                  <div className="user-profile-inner">
+                    <svg
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                    >
+                      <g data-name="Layer 2" id="Layer_2">
+                        <path
+                          d="m15.626 11.769a6 6 0 1 0 -7.252 0 9.008 9.008 0 0 0 -5.374 8.231 3 3 0 0 0 3 3h12a3 3 0 0 0 3-3 9.008 9.008 0 0 0 -5.374-8.231zm-7.626-4.769a4 4 0 1 1 4 4 4 4 0 0 1 -4-4zm10 14h-12a1 1 0 0 1 -1-1 7 7 0 0 1 14 0 1 1 0 0 1 -1 1z"
+                        ></path>
+                      </g>
+                    </svg>
+                    <p>Log In</p>
+                  </div>
                 </Link>
-                <Link to="/signup" className="btn btn-primary">Sign Up</Link>
+
+                {/* --- ÖZEL SIGN UP BUTONU --- */}
+                {/* İkon yok, sadece yazı, Mavi Renk */}
+                <Link 
+                  to="/signup" 
+                  className="user-profile-primary"
+                  role="button"
+                >
+                  Sign Up
+                </Link>
+
               </div>
             )}
           </div>
