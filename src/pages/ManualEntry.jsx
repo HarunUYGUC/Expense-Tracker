@@ -278,13 +278,48 @@ function ManualEntry() {
                             </div>
                         </div>
                         ))}
-                      <button className="btn btn-primary-subtle text-primary fw-bold border-0 py-2 px-4 mt-2" onClick={addProductRow} disabled={isDisabled}><FaPlus className="me-2" /> Add Product</button>
+                      <button
+                        className="add-btn"
+                        onClick={addProductRow}
+                        disabled={isDisabled}
+                        title="Add New Row"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          height="50px"
+                          width="50px"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            strokeWidth="1.5"
+                            d="M12 22C17.5 22 22 17.5 22 12C22 6.5 17.5 2 12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22Z"
+                          ></path>
+                          <path strokeWidth="1.5" d="M8 12H16"></path>
+                          <path strokeWidth="1.5" d="M12 16V8"></path>
+                        </svg>
+                        <span>Add Product</span>
+                      </button>
                     </div>
-                    <div className="d-flex justify-content-end mt-3">
-                         <button className="btn btn-primary btn-lg px-5" onClick={handleSave} disabled={isDisabled}>
-                            {loading ? (<><span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Saving...</>) : (<><FaSave className="me-2" /> Save Data</>)}
-                         </button>
-                    </div>
+                  <div className="d-flex justify-content-end mt-3 pb-5">
+                    <button 
+                      className="save-btn"
+                      onClick={handleSave}
+                      disabled={isDisabled}
+                    >
+                      <span>
+                        {loading ? (
+                          <>
+                            <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            Saving...
+                          </>
+                        ) : (
+                          <>
+                            <FaSave className="me-2" /> Save Data
+                          </>
+                        )}
+                      </span>
+                    </button>
+                  </div>
                 </div>
              </div>
           </div>
