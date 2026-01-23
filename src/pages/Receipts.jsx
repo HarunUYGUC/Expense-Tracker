@@ -1,10 +1,10 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { FaCloudUploadAlt } from 'react-icons/fa';
+import { FaCloudUploadAlt, FaListAlt } from 'react-icons/fa';
 import { db, storage } from '../firebase'; 
 import { useAuth } from '../context/AuthContext'; 
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage"; 
-import { collection, addDoc, query, where, onSnapshot, orderBy } from "firebase/firestore"; 
+import { ref, uploadBytesResumable, getDownloadURL, deleteObject } from "firebase/storage"; 
+import { collection, addDoc, query, where, onSnapshot, orderBy, deleteDoc, doc, getDoc } from "firebase/firestore"; 
 import ImageModal from '../components/ImageModal';
 import { Link } from 'react-router-dom';
 
@@ -17,7 +17,7 @@ function Receipts() {
   const [receipts, setReceipts] = useState([]);
   const [loadingReceipts, setLoadingReceipts] = useState(true);
 
-  // GERÇEK ZAMANLI VERİ ÇEKME (Firestore) 
+  // VERİ ÇEKME
   useEffect(() => {
     setLoadingReceipts(true);
     if (user) {
@@ -30,7 +30,6 @@ function Receipts() {
       const unsubscribe = onSnapshot(q, (querySnapshot) => {
         const receiptsData = [];
         querySnapshot.forEach((doc) => {
-          // Eğer veride 'imageUrl' varsa bu bir fiştir (Manuel giriş değil), listeye ekle
           if(doc.data().imageUrl) {
              receiptsData.push({ id: doc.id, ...doc.data() });
           }
@@ -39,7 +38,6 @@ function Receipts() {
         setLoadingReceipts(false);
       }, (error) => {
         console.error("Error fetching receipts: ", error);
-        // İndeks hatası varsa konsolda link çıkacaktır
         setLoadingReceipts(false);
       });
 
@@ -50,7 +48,7 @@ function Receipts() {
     }
   }, [user]);
 
-  // GERÇEK DOSYA YÜKLEME (Firebase Storage) 
+  // DOSYA YÜKLEME
   const onDrop = useCallback((acceptedFiles) => {
     const file = acceptedFiles[0];
     if (!file) return;
@@ -65,26 +63,20 @@ function Receipts() {
     setError('');
 
     const storageRef = ref(storage, `receipts/${user.uid}/${Date.now()}_${file.name}`);
-    
     const uploadTask = uploadBytesResumable(storageRef, file);
 
-    // Yükleme Durumunu İzle
     uploadTask.on('state_changed', 
       (snapshot) => {
-        // İlerleme yüzdesini hesapla
         const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
         setUploadProgress(progress);
       }, 
       (error) => {
-        // Hata Durumu
         console.error("Upload error:", error);
         setError("File upload failed. Check Storage rules.");
         setIsUploading(false);
       }, 
       () => {
-        // Başarılı Bitiş Durumu
         getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
-          // Resim yüklendi, şimdi URL'sini ve bilgilerini Firestore'a kaydet
           try {
             await addDoc(collection(db, "receipts"), {
               userId: user.uid,
@@ -92,7 +84,7 @@ function Receipts() {
               fileName: file.name,
               createdAt: new Date(),
               title: file.name,
-              price: 0,
+              price: 0, 
               date: new Date().toLocaleDateString(),
               isManual: false 
             });
@@ -100,12 +92,42 @@ function Receipts() {
             console.error("Error adding document: ", e);
             setError("Failed to save receipt data.");
           }
-          
           setIsUploading(false);
         });
       }
     );
   }, [user]);
+
+  // SİLME FONKSİYONU (Hem DB Hem Storage)
+  const handleDeleteReceipt = async (e, receiptId) => {
+    e.stopPropagation(); 
+    if (!window.confirm("Are you sure you want to delete this receipt? This action cannot be undone.")) {
+      return;
+    }
+
+    try {
+      const docRef = doc(db, "receipts", receiptId);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+
+        if (data.imageUrl) {
+          const imageRef = ref(storage, data.imageUrl);
+          
+          await deleteObject(imageRef).catch((err) => {
+             console.warn("Image delete warning:", err);
+          });
+        }
+
+        await deleteDoc(docRef);
+      }
+
+    } catch (err) {
+      console.error("Error deleting document: ", err);
+      alert("Failed to delete receipt.");
+    }
+  };
 
   // MODAL
   const [isModalShowing, setIsModalShowing] = useState(false);
@@ -170,62 +192,77 @@ function Receipts() {
             </div>
           )}
 
-          <div className="mb-5">
-            <h3 id="scanned-section" className="h5 mb-3">All Scanned Receipts</h3>
+          <div className="mt-5 mb-5">
+            <h3 id="scanned-section" className="h5 mb-3 fw-bold d-flex align-items-center">
+                <FaListAlt className="me-2 text-muted" /> All Scanned Receipts
+            </h3>
+            
             <div className="card shadow-sm border-0">
-              <div className="list-group list-group-flush">
-                
-                {loadingReceipts && (
-                  <div className="list-group-item p-5 text-center">
-                    <div className="spinner-border" role="status">
-                      <span className="visually-hidden">Loading...</span>
+                <div className="list-group list-group-flush">
+                    <div className="list-group-item bg-body-tertiary text-body-secondary fw-bold small text-uppercase d-flex align-items-center">
+                        <div style={{ flex: 2 }}>File Name</div>
+                        <div style={{ flex: 1 }}>Date & Time</div> 
+                        <div style={{ flex: 1, textAlign: 'right' }}>Total Price</div>
+                        <div style={{ width: '40px' }}></div> 
                     </div>
-                  </div>
-                )}
 
-                {!user && !loadingReceipts && (
-                  <div className="list-group-item p-5 text-center">
-                    <h5 className="text-muted">
-                      Please <Link to="/login">log in</Link> to view your receipts.
-                    </h5>
-                  </div>
-                )}
+                    {loadingReceipts && (
+                        <div className="p-4 text-center text-muted">Loading receipts...</div>
+                    )}
 
-                {user && !loadingReceipts && receipts.length === 0 && (
-                  <div className="list-group-item p-5 text-center">
-                    <h5 className="text-muted">You haven't uploaded any receipts yet.</h5>
-                    <p className="text-muted">Try uploading one above!</p>
-                  </div>
-                )}
-                
-                {user && !loadingReceipts && receipts.map(receipt => (
-                  <div 
-                    key={receipt.id} 
-                    className="list-group-item d-flex justify-content-between align-items-center p-3"
-                    style={{ cursor: 'pointer' }}
-                    onClick={() => openModal(receipt.imageUrl, receipt.fileName)}
-                  >
-                    <div className="d-flex align-items-center">
-                      <img 
-                        src={receipt.imageUrl} 
-                        alt={receipt.fileName} 
-                        className="receipt-list-thumbnail me-3" 
-                        onError={(e) => { e.target.src = 'https://placehold.co/60x60?text=Error'; }} // Resim yüklenemezse yedek
-                      />
-                      <div>
-                        <h6 className="mb-0 fw-bold">{receipt.fileName}</h6>
-                        <small className="text-muted">
-                            {/* createdAt bazen null olabilir, kontrol ekledik */}
-                            {receipt.createdAt?.toDate ? receipt.createdAt.toDate().toLocaleDateString() : 'Just now'}
-                        </small>
-                      </div>
-                    </div>
-                    <div className="text-end">
-                      <span className="fw-bold">${receipt.price.toFixed(2)}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                    {!user && !loadingReceipts && (
+                        <div className="p-5 text-center text-muted">
+                            Please <Link to="/login">log in</Link> to view your receipts.
+                        </div>
+                    )}
+
+                    {user && !loadingReceipts && receipts.length === 0 && (
+                        <div className="p-5 text-center text-muted">
+                            You haven't uploaded any receipts yet.
+                        </div>
+                    )}
+
+                    {user && !loadingReceipts && receipts.map(receipt => (
+                        <div 
+                            key={receipt.id} 
+                            className="list-group-item list-group-item-action d-flex align-items-center p-3"
+                            style={{ cursor: 'pointer' }}
+                            onClick={() => openModal(receipt.imageUrl, receipt.fileName)}
+                        >
+                            <div style={{ flex: 2 }} className="d-flex align-items-center">
+                                <img 
+                                    src={receipt.imageUrl} 
+                                    alt={receipt.fileName} 
+                                    className="receipt-list-thumbnail me-3" 
+                                    onError={(e) => { e.target.src = 'https://placehold.co/60x60?text=Error'; }}
+                                    style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '4px' }}
+                                />
+                                <span className="fw-bold text-truncate">{receipt.fileName}</span>
+                            </div>
+                            
+                            <div style={{ flex: 1 }} className="text-muted small">
+                                {receipt.createdAt?.toDate ? receipt.createdAt.toDate().toLocaleDateString() : 'Just now'}
+                            </div>
+
+                            <div style={{ flex: 1, textAlign: 'right' }} className="fw-bold text-primary">
+                                ${Number(receipt.price).toFixed(2)}
+                            </div>
+                            
+                            <div style={{ width: '50px', display: 'flex', justifyContent: 'flex-end' }}>
+                              <button 
+                                className="delete-entry-btn"
+                                onClick={(e) => handleDeleteReceipt(e, receipt.id)}
+                                title="Delete Receipt"
+                              >
+                                <svg viewBox="0 0 448 512" className="delete-entry-svgIcon">
+                                  <path d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"></path>
+                                </svg>
+                              </button>
+                            </div>
+
+                        </div>
+                    ))}
+                </div>
             </div>
           </div>
         </div>
