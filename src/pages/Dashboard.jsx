@@ -93,11 +93,11 @@ function Dashboard() {
         <div className="d-flex justify-content-between align-items-center mb-4">
           <h1 className="display-6 fw-bold">Dashboard</h1>
           <div className="d-flex flex-column flex-sm-row gap-2">
-             <Link to="/texts" className="btn btn-pulse btn-pulse-secondary px-4 py-2">
-                <FaEdit className="me-2" /> New Text
-             </Link>
              <Link to="/receipts" className="btn btn-pulse btn-pulse-primary px-4 py-2">
                 <FaPlus className="me-2" /> New Scan
+             </Link>
+             <Link to="/texts" className="btn btn-pulse btn-pulse-secondary px-4 py-2">
+                <FaEdit className="me-2" /> New Text
              </Link>
           </div>
         </div>
