@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, Link } from 'react-router-dom';
-import { FaBell, FaUserCircle } from 'react-icons/fa';
+import { FaBell, FaUserCircle } from 'react-icons/fa'; // Sadece gerekli ikonlar
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 
@@ -18,7 +18,7 @@ function Navbar() {
         {/* Marka (Logo) */}
         <Link className="navbar-brand fw-bold" to="/">Expense Tracker</Link>
 
-        {/* Mobil Toggler (Hamburger) Butonu */}
+        {/* Mobil Toggler */}
         <button 
           className="navbar-toggler" 
           type="button" 
@@ -31,25 +31,25 @@ function Navbar() {
           <span className="navbar-toggler-icon"></span>
         </button>
 
-        {/* Çökebilir (Collapsible) Wrapper */}
+        {/* Çökebilir İçerik */}
         <div className="collapse navbar-collapse" id="mainNavbar">
 
           {/* Sayfa Linkleri */}
-          <ul className="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-5">
+          <ul className="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-5 gap-1"> 
             <li className="nav-item">
-              <NavLink className="nav-link" to="/dashboard">Dashboard</NavLink>
+              <NavLink className="nav-link nav-link-animated" to="/dashboard">Dashboard</NavLink>
             </li>
             <li className="nav-item">
-              <NavLink className="nav-link" to="/receipts">Receipts</NavLink>
+              <NavLink className="nav-link nav-link-animated" to="/receipts">Receipts</NavLink>
             </li>
             <li className="nav-item">
-              <NavLink className="nav-link" to="/texts">Texts</NavLink>
+              <NavLink className="nav-link nav-link-animated" to="/texts">Texts</NavLink>
             </li>
             <li className="nav-item">
-              <NavLink className="nav-link" to="/products">Products</NavLink>
+              <NavLink className="nav-link nav-link-animated" to="/products">Products</NavLink>
             </li>
             <li className="nav-item">
-              <NavLink className="nav-link" to="/stores">Stores</NavLink>
+              <NavLink className="nav-link nav-link-animated" to="/stores">Stores</NavLink>
             </li>
           </ul>
 
@@ -81,10 +81,10 @@ function Navbar() {
                 </button>
               </>
             ) : (
-              // KULLANICI GİRİŞ YAPMAMIŞSA
+              // GİRİŞ YAPMAMIŞSA
               <div className="d-flex align-items-center gap-3">
                 
-                {/* ÖZEL LOGIN BUTONU */}
+                {/* LOGIN BUTONU */}
                 <Link 
                   to="/login" 
                   className="user-profile" 
@@ -107,7 +107,7 @@ function Navbar() {
                   </div>
                 </Link>
 
-                {/* ÖZEL SIGN UP BUTONU */}
+                {/* SIGN UP BUTONU */}
                 <Link 
                   to="/signup" 
                   className="user-profile-primary"
@@ -120,7 +120,6 @@ function Navbar() {
             )}
           </div>
         </div> 
-        {/* Wrapper Bitişi */}
       </div>
     </nav>
   );

@@ -558,3 +558,53 @@
   transition-duration: .3s;
 }
 /* Delete Entry Animation Finished */
+
+/* Animated Navbar Link */
+.nav-link-animated {
+  font-family: inherit;
+  font-weight: 500;
+  cursor: pointer;
+  position: relative;
+  border: none;
+  background: none;
+  transition-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1);
+  transition-duration: 400ms;
+  transition-property: color;
+  color: inherit; 
+}
+
+.nav-link-animated:focus,
+.nav-link-animated:hover {
+  color: var(--bs-primary);
+}
+
+/* Çizgi Animasyonu */
+.nav-link-animated:after {
+  content: "";
+  pointer-events: none;
+  bottom: 0px; 
+  left: 50%;
+  position: absolute;
+  width: 0%;
+  height: 2px;
+  background-color: var(--bs-primary); 
+  transition-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1);
+  transition-duration: 400ms;
+  transition-property: width, left;
+}
+
+.nav-link-animated:focus:after,
+.nav-link-animated:hover:after {
+  width: 100%;
+  left: 0%;
+}
+
+.nav-link-animated.active {
+  color: var(--bs-primary);
+}
+
+.nav-link-animated.active:after {
+  width: 100%; 
+  left: 0%;
+}
+/* Animated Navbar Link Finished */
