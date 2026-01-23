@@ -137,7 +137,7 @@ function Receipts() {
           
           <div className="mb-5">
             <h1 className="display-6 fw-bold">Scan New Receipt</h1>
-            <p className="text-muted">Upload an image of your receipt. (Real Cloud Storage)</p>
+            <p className="text-muted">Upload an image of your receipt.</p>
             {error && <div className="alert alert-danger">{error}</div>}
             
             <div 
