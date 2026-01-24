@@ -40,7 +40,7 @@ function Navbar() {
               <NavLink className="nav-link nav-link-animated" to="/dashboard">Dashboard</NavLink>
             </li>
             <li className="nav-item">
-              <NavLink className="nav-link nav-link-animated" to="/receipts">Receipts</NavLink>
+              <NavLink className="nav-link nav-link-animated" to="/receipts">Scans</NavLink>
             </li>
             <li className="nav-item">
               <NavLink className="nav-link nav-link-animated" to="/texts">Texts</NavLink>
