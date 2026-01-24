@@ -608,3 +608,73 @@
   left: 0%;
 }
 /* Animated Navbar Link Finished */
+
+/* Animated Notification Bell */
+.notification-bell {
+  --color: var(--bs-secondary); 
+  --size: 24px; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  cursor: pointer;
+  font-size: var(--size);
+  user-select: none;
+  fill: var(--color);
+  margin-right: 1rem; 
+}
+
+.notification-bell .bell-regular {
+  position: absolute;
+  animation: keyframes-fill .5s;
+  width: 24px;
+  height: 24px;
+  fill: var(--color); /* Rengi değişkenden al */
+}
+
+.notification-bell .bell-solid {
+  position: absolute;
+  display: none;
+  animation: keyframes-fill .5s;
+  width: 24px;
+  height: 24px;
+  fill: var(--color);
+}
+
+/* On check event */
+.notification-bell input:checked ~ .bell-regular {
+  display: none;
+}
+
+.notification-bell input:checked ~ .bell-solid {
+  display: block;
+}
+
+/* Hide the default checkbox */
+.notification-bell input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+/* Animation */
+@keyframes keyframes-fill {
+  0% {
+    opacity: 0;
+  }
+
+  25% {
+    transform: rotate(25deg);
+  }
+
+  50% {
+    transform: rotate(-20deg) scale(1.2);
+  }
+
+  75% {
+    transform: rotate(15deg);
+  }
+}
+/* Animated Notification Bell Finished */
