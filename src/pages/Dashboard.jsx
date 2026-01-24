@@ -3,10 +3,10 @@ import { Link } from 'react-router-dom';
 import { FaPlus, FaEdit } from 'react-icons/fa';
 import { dashboardData } from '../data/dashboardData';
 import ImageModal from '../components/ImageModal';
-import ReceiptDetailModal from '../components/ReceiptDetailModal'; 
+import ReceiptDetailModal from '../components/ReceiptDetailModal';
 import { useAuth } from '../context/AuthContext';
 import { db } from '../firebase';
-import { collection, query, where, onSnapshot, orderBy, limit, Timestamp } from "firebase/firestore";
+import { collection, query, where, onSnapshot, orderBy, limit } from "firebase/firestore";
 
 function Dashboard() {
   const { user } = useAuth();
@@ -53,6 +53,7 @@ function Dashboard() {
 
       return () => unsubscribe();
     } else {
+      // Kullanıcı yoksa listeyi temizle
       setRecentScans([]);
       setLoadingScans(false);
     }
@@ -96,6 +97,13 @@ function Dashboard() {
       });
 
       return () => unsubscribe();
+    } else {
+      // Kullanıcı çıkış yaptıysa istatistikleri SIFIRLA
+      setMonthlyStats({
+        totalSpent: 0,
+        receiptCount: 0,
+        averageSpend: 0
+      });
     }
   }, [user]);
 
@@ -164,6 +172,7 @@ function Dashboard() {
               <div className="card shadow-sm">
                 <div className="card-body p-5 text-center">
                   <h5 className="text-muted">No recent activity found.</h5>
+                  <p className="text-muted mb-0">Start by scanning a receipt or entering an expense manually.</p>
                 </div>
               </div>
             </div>
@@ -191,6 +200,7 @@ function Dashboard() {
                 <div className="card-body">
                   <h6 className="card-title text-truncate" title={scan.fileName}>{scan.fileName}</h6>
                   <p className="card-text text-muted">${Number(scan.price).toFixed(2)}</p>
+                  
                   {scan.isManual && <span className="badge bg-secondary me-1">Text</span>}
                   {!scan.isManual && <span className="badge bg-info text-dark">Scanned</span>}
                 </div>
