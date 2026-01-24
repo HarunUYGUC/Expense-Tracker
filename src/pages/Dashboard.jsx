@@ -6,23 +6,29 @@ import ImageModal from '../components/ImageModal';
 import ReceiptDetailModal from '../components/ReceiptDetailModal'; 
 import { useAuth } from '../context/AuthContext';
 import { db } from '../firebase';
-import { collection, query, where, onSnapshot, orderBy, limit } from "firebase/firestore";
+import { collection, query, where, onSnapshot, orderBy, limit, Timestamp } from "firebase/firestore";
 
 function Dashboard() {
   const { user } = useAuth();
   
+  // STATE'LER
   const [recentScans, setRecentScans] = useState([]);
   const [loadingScans, setLoadingScans] = useState(true);
   
-  // RESİM MODALI STATE'LERİ
+  // Aylık İstatistik State'leri
+  const [monthlyStats, setMonthlyStats] = useState({
+    totalSpent: 0,
+    receiptCount: 0,
+    averageSpend: 0
+  });
+
+  // Modal State'leri
   const [isImageModalShowing, setIsImageModalShowing] = useState(false);
   const [selectedImage, setSelectedImage] = useState({ url: '', alt: '' });
-
-  // DETAY MODALI STATE'LERİ
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedReceipt, setSelectedReceipt] = useState(null);
-  
-  // Veri Çekme
+
+  // 1. SON 3 KAYDI ÇEKME (LİSTE İÇİN)
   useEffect(() => {
     setLoadingScans(true);
     if (user) {
@@ -50,32 +56,67 @@ function Dashboard() {
       setRecentScans([]);
       setLoadingScans(false);
     }
-  }, [user]); 
+  }, [user]);
 
-  // RESİM MODALI FONKSİYONLARI
+  // 2. AYLIK TOPLAM HARCAMAYI HESAPLAMA
+  useEffect(() => {
+    if (user) {
+      // Bu ayın başlangıç ve bitiş tarihlerini hesapla
+      const now = new Date();
+      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+      const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
+
+      // Firestore sorgusu: Bu ayın verileri
+      const q = query(
+        collection(db, "receipts"),
+        where("userId", "==", user.uid),
+        where("createdAt", ">=", startOfMonth),
+        where("createdAt", "<=", endOfMonth)
+      );
+
+      const unsubscribe = onSnapshot(q, (querySnapshot) => {
+        let total = 0;
+        let count = 0;
+
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          // Fiyatı topla
+          total += Number(data.price) || 0;
+          count++;
+        });
+
+        setMonthlyStats({
+          totalSpent: total,
+          receiptCount: count,
+          averageSpend: count > 0 ? total / count : 0
+        });
+
+      }, (error) => {
+        console.error("Error calculating monthly stats:", error);
+      });
+
+      return () => unsubscribe();
+    }
+  }, [user]);
+
+
+  // MODAL FONKSİYONLARI
   const openImageModal = (imageUrl, imageAlt) => {
     setSelectedImage({ url: imageUrl, alt: imageAlt });
     setIsImageModalShowing(true);
   };
-
   const closeImageModal = () => {
     setIsImageModalShowing(false);
     setSelectedImage({ url: '', alt: '' });
   };
-
-  // DETAY MODALI FONKSİYONLARI
   const openDetailModal = (receipt) => {
     setSelectedReceipt(receipt);
     setShowDetailModal(true);
   };
-
-  // GENEL TIKLAMA YÖNETİCİSİ
   const handleCardClick = (scan) => {
     if (scan.isManual) {
-      // Manuel girişse Detay Modalını aç
       openDetailModal(scan);
     } else {
-      // Resimse Resim Modalını aç
       openImageModal(scan.imageUrl, scan.fileName);
     }
   };
@@ -83,72 +124,62 @@ function Dashboard() {
   return (
     <div className="dashboard-page-wrapper p-4">
       
-      {/* Blur efekti her iki modal için de geçerli olsun */}
       <div 
         className={`dashboard-content-wrapper ${isImageModalShowing || showDetailModal ? 'content-blurred' : ''}`}
         style={{ transition: 'filter 0.3s ease-in-out' }} 
       >
         
-        {/* BAŞLIK BÖLÜMÜ */}
+        {/* BAŞLIK */}
         <div className="d-flex justify-content-between align-items-center mb-4">
           <h1 className="display-6 fw-bold">Dashboard</h1>
           <div className="d-flex flex-column flex-sm-row gap-2">
-             <Link to="/receipts" className="btn btn-pulse btn-pulse-primary px-4 py-2">
-                <FaPlus className="me-2" /> New Scan
-             </Link>
              <Link to="/texts" className="btn btn-pulse btn-pulse-secondary px-4 py-2">
                 <FaEdit className="me-2" /> New Text
+             </Link>
+             <Link to="/receipts" className="btn btn-pulse btn-pulse-primary px-4 py-2">
+                <FaPlus className="me-2" /> New Scan
              </Link>
           </div>
         </div>
 
-        {/* RECENT SCANS BÖLÜMÜ */}
+        {/* RECENT SCANS */}
         <h3 className="h5 mb-3">Recent Scans</h3>
         <div className="row mb-4">
-          
           {loadingScans && (
             <div className="col-12 text-center p-5">
               <div className="spinner-border" role="status"></div>
             </div>
           )}
-
           {!user && !loadingScans && (
             <div className="col-12">
               <div className="card shadow-sm">
                 <div className="card-body p-5 text-center">
-                  <h5 className="text-muted">
-                    <Link to="/login">Log in</Link> to see your data.
-                  </h5>
+                  <h5 className="text-muted"><Link to="/login">Log in</Link> to see your data.</h5>
                 </div>
               </div>
             </div>
           )}
-          
           {user && !loadingScans && recentScans.length === 0 && (
              <div className="col-12">
               <div className="card shadow-sm">
                 <div className="card-body p-5 text-center">
-                  <h5 className="text-muted">No recent scans found.</h5>
-                  <p className="text-muted mb-0">Go to <Link to="/receipts">Receipts</Link> to upload or <Link to="/texts">Texts</Link> to enter data manually!</p>
+                  <h5 className="text-muted">No recent activity found.</h5>
                 </div>
               </div>
             </div>
           )}
-
-          {/* VERİ LİSTELEME */}
           {user && !loadingScans && recentScans.map(scan => (
             <div key={scan.id} className="col-lg-4 col-md-6 mb-4">
               <div 
                 className="card border-0 shadow-sm h-100"
                 style={{ cursor: 'pointer' }}
-                onClick={() => handleCardClick(scan)} 
+                onClick={() => handleCardClick(scan)}
               >
-                {/* Resim varsa göster, yoksa ikon göster */}
                 {scan.imageUrl ? (
                     <img 
                       src={scan.imageUrl} 
-                      className="card-img-top" 
                       alt={scan.fileName} 
+                      className="card-img-top" 
                       style={{ height: '200px', objectFit: 'cover' }} 
                       onError={(e) => { e.target.src = 'https://placehold.co/600x400?text=No+Image'; }}
                     />
@@ -157,12 +188,10 @@ function Dashboard() {
                         <span className="fs-1">📝</span>
                     </div>
                 )}
-                
                 <div className="card-body">
                   <h6 className="card-title text-truncate" title={scan.fileName}>{scan.fileName}</h6>
                   <p className="card-text text-muted">${Number(scan.price).toFixed(2)}</p>
-                  
-                  {scan.isManual && <span className="badge bg-secondary me-1">Manual</span>}
+                  {scan.isManual && <span className="badge bg-secondary me-1">Text</span>}
                   {!scan.isManual && <span className="badge bg-info text-dark">Scanned</span>}
                 </div>
               </div>
@@ -170,7 +199,7 @@ function Dashboard() {
           ))}
         </div>
 
-        {/* QUICK LINKS BÖLÜMÜ */}
+        {/* QUICK LINKS */}
         <h3 className="h5 mb-3">Quick Links</h3>
         <div className="row mb-4">
           {dashboardData.quickLinks.map(link => (
@@ -189,43 +218,62 @@ function Dashboard() {
           ))}
         </div>
 
-        {/* MONTHLY SPENDING BÖLÜMÜ */}
-        <h3 className="h5 mb-3">Monthly Spending</h3>
+        {/* MONTHLY SPENDING */}
+        <h3 className="h5 mb-3">Monthly Spending (Current Month)</h3>
         <div className="row">
-          {dashboardData.monthlySpending.map(stat => (
-            <div key={stat.id} className="col-lg-4 col-md-6 mb-4">
-              <div className="card border-0 shadow-sm h-100">
-                <div className="card-body">
-                  <h6 className="text-muted">{stat.title}</h6>
-                  <h2 className="display-6 fw-bold">
-                    {stat.isCurrency && '$'}
-                    {stat.value.toLocaleString(undefined, { 
-                      minimumFractionDigits: stat.isCurrency ? 2 : 0 
-                    })}
-                  </h2>
-                </div>
+          
+          {/* 1. TOPLAM HARCAMA */}
+          <div className="col-lg-4 col-md-6 mb-4">
+            <div className="card border-0 shadow-sm h-100">
+              <div className="card-body">
+                <h6 className="text-muted">Total Spent</h6>
+                <h2 className="display-6 fw-bold text-primary">
+                  ${monthlyStats.totalSpent.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                </h2>
               </div>
             </div>
-          ))}
+          </div>
+
+          {/* 2. ORTALAMA HARCAMA */}
+          <div className="col-lg-4 col-md-6 mb-4">
+            <div className="card border-0 shadow-sm h-100">
+              <div className="card-body">
+                <h6 className="text-muted">Average Spend per Receipt</h6>
+                <h2 className="display-6 fw-bold">
+                  ${monthlyStats.averageSpend.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                </h2>
+              </div>
+            </div>
+          </div>
+
+          {/* 3. FİŞ SAYISI */}
+          <div className="col-lg-4 col-md-6 mb-4">
+            <div className="card border-0 shadow-sm h-100">
+              <div className="card-body">
+                <h6 className="text-muted">Number of Receipts</h6>
+                <h2 className="display-6 fw-bold">
+                  {monthlyStats.receiptCount}
+                </h2>
+              </div>
+            </div>
+          </div>
+
         </div>
       
       </div> 
 
-      {/* Resim Modalı */}
+      {/* Modallar */}
       <ImageModal
         isShowing={isImageModalShowing}
         onClose={closeImageModal}
         imageUrl={selectedImage.url}
         imageAlt={selectedImage.alt}
       />
-
-      {/* Detay Modalı (Manuel Girişler İçin) */}
       <ReceiptDetailModal 
         show={showDetailModal} 
         onClose={() => setShowDetailModal(false)} 
         receipt={selectedReceipt} 
       />
-
     </div>
   );
 }
