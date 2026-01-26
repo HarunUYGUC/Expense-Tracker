@@ -98,7 +98,7 @@ function ProductDetails() {
     <div className="dashboard-page-wrapper p-4">
       <div className="container-fluid">
         
-        {/* BREADCRUMB (GÜNCELLENDİ) */}
+        {/* BREADCRUMB */}
         <nav aria-label="breadcrumb" className="mb-4">
           <ol className="breadcrumb">
             <li className="breadcrumb-item">
@@ -111,7 +111,7 @@ function ProductDetails() {
           </ol>
         </nav>
 
-        {/* SAYFA BAŞLIĞI (H1) (GÜNCELLENDİ) */}
+        {/* SAYFA BAŞLIĞI (H1) */}
         <div className="d-flex flex-column flex-md-row align-items-md-center mb-4 gap-3">
              <h1 className="display-6 fw-bold mb-0">
                {fullName}
