@@ -63,10 +63,14 @@ function Products() {
     }
   }, [user]);
 
-  const filteredProducts = products.filter(product =>
-    product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    product.brand.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredProducts = products.filter(product => {
+    const search = searchTerm.toLowerCase();
+    return (
+      product.name.toLowerCase().includes(search) ||
+      product.brand.toLowerCase().includes(search) ||
+      (product.type && product.type.toLowerCase().includes(search))
+    );
+  });
 
   return (
     <div className="dashboard-page-wrapper p-4">
