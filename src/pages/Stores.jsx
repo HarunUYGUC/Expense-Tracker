@@ -1,13 +1,87 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FaStore, FaMapMarkerAlt } from 'react-icons/fa';
-import { allStores } from '../data/storesData';
+import { useAuth } from '../context/AuthContext';
+import { db } from '../firebase';
+import { collection, query, where, onSnapshot } from 'firebase/firestore';
 
 function Stores() {
+  const { user } = useAuth();
+  const [stores, setStores] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // YARDIMCI FONKSİYON: İsim Temizleme
+  const cleanStoreName = (name) => {
+    if (!name) return "Unknown Store";
+    
+    // Dosya uzantılarını kaldır (.jpg, .png, .jpeg vb.)
+    // Regex: Nokta ile başlayan ve 3-4 harfli uzantıları bulup sil
+    let cleanName = name.replace(/\.(jpg|jpeg|png|pdf)$/i, '');
+    
+    // Baş harfleri büyüt, kalanı küçük yap (Standartlaştırma)
+    // Örn: "a101" -> "A101", "migros jet" -> "Migros Jet"
+    // (Basitçe 'Title Case' yapıyoruz)
+    cleanName = cleanName
+      .toLowerCase()
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+
+    return cleanName.trim();
+  };
+
+  useEffect(() => {
+    if (user) {
+      setLoading(true);
+      const q = query(
+        collection(db, "receipts"),
+        where("userId", "==", user.uid)
+      );
+
+      const unsubscribe = onSnapshot(q, (snapshot) => {
+        const storeMap = {};
+
+        snapshot.forEach((doc) => {
+          const data = doc.data();
+          
+          // Ham veriyi al (fileName veya title)
+          const rawName = data.fileName || data.title || "Unknown Store";
+          
+          // Temizlenmiş ismi oluştur
+          const storeName = cleanStoreName(rawName);
+          
+          // Gruplama (Temiz isim üzerinden)
+          if (!storeMap[storeName]) {
+            storeMap[storeName] = {
+              id: storeName, // ID olarak temiz ismi kullanıyoruz
+              name: storeName,
+              address: "Address not available", 
+              totalSpent: 0,
+              visitCount: 0
+            };
+          }
+
+          storeMap[storeName].totalSpent += Number(data.price) || 0;
+          storeMap[storeName].visitCount += 1;
+        });
+
+        // Objeyi diziye çevirip A-Z sırala
+        const storesArray = Object.values(storeMap).sort((a, b) => a.name.localeCompare(b.name));
+        
+        setStores(storesArray);
+        setLoading(false);
+      });
+
+      return () => unsubscribe();
+    } else {
+      setStores([]);
+      setLoading(false);
+    }
+  }, [user]);
+
   return (
     <div className="dashboard-page-wrapper p-4">
       <div className="container-fluid">
-        {/* Breadcrumb */}
         <nav aria-label="breadcrumb" className="mb-3">
           <ol className="breadcrumb">
             <li className="breadcrumb-item active" aria-current="page">Stores</li>
@@ -16,9 +90,17 @@ function Stores() {
 
         <h1 className="display-6 fw-bold mb-4">Stores</h1>
 
+        {loading && <div className="text-center p-5"><div className="spinner-border" role="status"></div></div>}
+
+        {!loading && stores.length === 0 && (
+          <div className="alert alert-info text-center">
+            No store data found. Add receipts or manual entries to see stores here.
+          </div>
+        )}
+
         <div className="row">
-          {allStores.map(store => (
-            <div key={store.id} className="col-md-6 col-lg-4 mb-4">
+          {stores.map((store, index) => (
+            <div key={index} className="col-md-6 col-lg-4 mb-4">
               <div className="card shadow-sm h-100 card-accent">
                 <div className="card-body d-flex flex-column">
                   <div className="d-flex align-items-center mb-3">
@@ -28,7 +110,7 @@ function Stores() {
                     <div>
                       <h5 className="card-title mb-1">{store.name}</h5>
                       <p className="card-text text-muted small">
-                        <FaMapMarkerAlt className="me-1" /> {store.address}
+                        {store.visitCount} visits recorded
                       </p>
                     </div>
                   </div>
@@ -36,9 +118,10 @@ function Stores() {
                   <div className="mt-auto d-flex justify-content-between align-items-center">
                      <div>
                         <small className="text-muted d-block">Total Spent</small>
-                        <span className="fw-bold">${store.stats.totalSpent.toLocaleString()}</span>
+                        <span className="fw-bold fs-5">${store.totalSpent.toLocaleString(undefined, {minimumFractionDigits: 2})}</span>
                      </div>
-                     <Link to={`/stores/${store.id}`} className="btn btn-outline-primary btn-sm">
+                     
+                     <Link to={`/stores/${encodeURIComponent(store.name)}`} className="btn btn-outline-primary btn-sm">
                         View Details
                     </Link>
                   </div>
