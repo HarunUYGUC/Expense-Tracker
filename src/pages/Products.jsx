@@ -27,24 +27,20 @@ function Products() {
           const data = doc.data();
           if (data.items && Array.isArray(data.items)) {
             data.items.forEach(item => {
-              // Ürünleri İSİMLERİNE (veya Marka+İsim kombinasyonuna) göre grupla
-              // Benzersiz anahtar: Marka - İsim (Örn: Sütaş - Tam Yağlı Süt)
               const uniqueKey = `${item.brand}-${item.name}`.toLowerCase();
               
               if (!productMap[uniqueKey]) {
                 productMap[uniqueKey] = {
-                  id: uniqueKey, // URL için güvenli bir ID
+                  id: uniqueKey,
                   name: item.name || 'Unnamed Product',
                   brand: item.brand,
                   type: item.type,
-                  // En son veriyi tutmak için karşılaştırma
                   latestPrice: Number(item.price),
                   latestDate: data.date,
-                  createdAt: data.createdAt, // Sıralama
+                  createdAt: data.createdAt,
                   historyCount: 1
                 };
               } else {
-                // Eğer bu ürün zaten varsa, en güncel fiyatı kontrol et
                 if (data.createdAt > productMap[uniqueKey].createdAt) {
                    productMap[uniqueKey].latestPrice = Number(item.price);
                    productMap[uniqueKey].latestDate = data.date;
@@ -67,7 +63,6 @@ function Products() {
     }
   }, [user]);
 
-  // Arama Filtresi
   const filteredProducts = products.filter(product =>
     product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     product.brand.toLowerCase().includes(searchTerm.toLowerCase())
@@ -77,11 +72,17 @@ function Products() {
     <div className="dashboard-page-wrapper p-4">
       <div className="container-fluid">
         
+        {/* BREADCRUMB */}
+        <nav aria-label="breadcrumb" className="mb-3">
+          <ol className="breadcrumb">
+            <li className="breadcrumb-item active" aria-current="page">Products</li>
+          </ol>
+        </nav>
+
+        {/* BAŞLIK VE ARAMA KUTUSU */}
         <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
-          <div className="mb-3 mb-md-0">
-            <h1 className="display-6 fw-bold">Products</h1>
-            <p className="text-muted">Overview of all products you have purchased.</p>
-          </div>
+          <h1 className="display-6 fw-bold mb-3 mb-md-0">Products</h1>
+          
           <div className="input-group" style={{ maxWidth: '300px' }}>
              <span className="input-group-text bg-body-tertiary border-end-0">
                <FaSearch className="text-muted" />
@@ -95,12 +96,12 @@ function Products() {
              />
           </div>
         </div>
-
+        
         {loading && <div className="text-center p-5"><div className="spinner-border" role="status"></div></div>}
 
         {!loading && products.length === 0 && (
           <div className="alert alert-info text-center">
-            No product data found. Use "Manual Entry" to add products.
+            No product data found. Use <Link to="/texts" className="alert-link fw-bold">Texts</Link> to add products.
           </div>
         )}
 
@@ -129,8 +130,6 @@ function Products() {
                       <span className="fs-5 fw-bold text-primary">${product.latestPrice.toFixed(2)}</span>
                     </div>
                     
-                    {/* Detay Sayfasına Link */}
-                    {/* encodeURIComponent: Ürün adında boşluk veya özel karakter varsa URL'i bozmasın diye */}
                     <Link 
                       to={`/products/${encodeURIComponent(product.name)}?brand=${encodeURIComponent(product.brand)}`} 
                       className="btn btn-sm btn-outline-primary rounded-pill px-3"

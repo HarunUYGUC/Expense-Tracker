@@ -94,7 +94,7 @@ function Stores() {
 
         {!loading && stores.length === 0 && (
           <div className="alert alert-info text-center">
-            No store data found. Add receipts or manual entries to see stores here.
+            No store data found. Use <Link to="/receipts" className="alert-link fw-bold">Scans</Link> or <Link to="/texts" className="alert-link fw-bold">Texts</Link> to add stores.
           </div>
         )}
 
