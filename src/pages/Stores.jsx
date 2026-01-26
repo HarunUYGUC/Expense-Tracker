@@ -110,7 +110,7 @@ function Stores() {
                     <div>
                       <h5 className="card-title mb-1">{store.name}</h5>
                       <p className="card-text text-muted small">
-                        {store.visitCount} visits recorded
+                        {store.visitCount} visit(s) recorded
                       </p>
                     </div>
                   </div>
