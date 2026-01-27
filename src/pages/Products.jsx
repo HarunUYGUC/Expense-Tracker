@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { FaBoxOpen, FaSearch, FaChevronRight } from 'react-icons/fa';
+import { FaBoxOpen, FaChevronRight } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
 import { db } from '../firebase';
 import { collection, query, where, onSnapshot } from 'firebase/firestore';
@@ -10,6 +10,11 @@ function Products() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+
+  // TEMİZLEME FONKSİYONU
+  const handleReset = () => {
+    setSearchTerm('');
+  };
 
   useEffect(() => {
     if (user) {
@@ -76,29 +81,39 @@ function Products() {
     <div className="dashboard-page-wrapper p-4">
       <div className="container-fluid">
         
-        {/* BREADCRUMB */}
+        {/* Breadcrumb Navigasyonu */}
         <nav aria-label="breadcrumb" className="mb-3">
           <ol className="breadcrumb">
             <li className="breadcrumb-item active" aria-current="page">Products</li>
           </ol>
         </nav>
 
-        {/* BAŞLIK VE ARAMA KUTUSU */}
+        {/* Başlık ve Animasyonlu Arama Çubuğu */}
         <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
           <h1 className="display-6 fw-bold mb-3 mb-md-0">Products</h1>
           
-          <div className="input-group" style={{ maxWidth: '300px' }}>
-             <span className="input-group-text bg-body-tertiary border-end-0">
-               <FaSearch className="text-muted" />
-             </span>
-             <input 
-               type="text" 
-               className="form-control border-start-0" 
-               placeholder="Search products..." 
-               value={searchTerm}
-               onChange={(e) => setSearchTerm(e.target.value)}
-             />
-          </div>
+          {/* YENİ ANİMASYONLU ARAMA ÇUBUĞU */}
+          <form className="search-form" onSubmit={(e) => e.preventDefault()}>
+              <button type="button"> {/* Arama ikonu */}
+                  <svg width="17" height="16" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="search">
+                      <path d="M7.667 12.667A5.333 5.333 0 107.667 2a5.333 5.333 0 000 10.667zM14.334 14l-2.9-2.9" stroke="currentColor" strokeWidth="1.333" strokeLinecap="round" strokeLinejoin="round"></path>
+                  </svg>
+              </button>
+              
+              <input 
+                className="search-input" 
+                placeholder="Search products..." 
+                type="text" 
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              
+              <button className="search-reset" type="button" onClick={handleReset}> {/* Temizleme butonu */}
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"></path>
+                  </svg>
+              </button>
+          </form>
         </div>
         
         {loading && <div className="text-center p-5"><div className="spinner-border" role="status"></div></div>}
