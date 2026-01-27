@@ -59,3 +59,15 @@ Bu proje, performans, güvenlik ve ölçeklenebilirlik gözetilerek aşağıdaki
 **Hooks:** useState, useEffect gibi React kancalarının etkin kullanımı.
 
 **Hibrit Veri Yapısı:** Hem dosya tabanlı (resim) hem metin tabanlı (manuel) veri girişini destekler.
+
+### 📱 PWA (Progressive Web App) Desteği
+
+- Bu uygulama, PWA standartlarına uygun olarak geliştirilmiştir. Bu sayede kullanıcılar:
+
+- **Mobil Uygulama Gibi Yükleme:** Tarayıcı üzerinden "Ana Ekrana Ekle" diyerek uygulamayı telefonlarına veya masaüstü bilgisayarlarına yükleyebilirler.
+
+- **Tam Ekran Deneyimi:** Yüklendikten sonra tarayıcı çubukları olmadan, bağımsız bir uygulama gibi çalışır.
+
+- **Offline Çalışma:** Temel arayüz öğeleri önbelleğe alınarak internet kesintilerinde bile uygulamanın açılması sağlanır.
+
+- **Hızlı Erişim:** Ana ekrandan tek dokunuşla erişim imkanı sunar.
