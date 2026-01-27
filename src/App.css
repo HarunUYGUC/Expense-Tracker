@@ -611,7 +611,7 @@
 
 /* Animated Notification Bell */
 .notification-bell {
-  --color: var(--bs-secondary); 
+  --color: var(--bs-secondary);
   --size: 24px; 
   display: flex;
   justify-content: center;
@@ -624,14 +624,16 @@
   margin-right: 1rem; 
 }
 
+/* Boş Zil İkonu */
 .notification-bell .bell-regular {
   position: absolute;
   animation: keyframes-fill .5s;
   width: 24px;
   height: 24px;
-  fill: var(--color); /* Rengi değişkenden al */
+  fill: var(--color);
 }
 
+/* Dolu Zil İkonu (Tıklanınca veya aktifken) */
 .notification-bell .bell-solid {
   position: absolute;
   display: none;
@@ -641,7 +643,7 @@
   fill: var(--color);
 }
 
-/* On check event */
+/* Checkbox mantığı: Tıklanınca zili değiştir */
 .notification-bell input:checked ~ .bell-regular {
   display: none;
 }
@@ -650,7 +652,7 @@
   display: block;
 }
 
-/* Hide the default checkbox */
+/* Varsayılan checkbox'ı gizle */
 .notification-bell input {
   position: absolute;
   opacity: 0;
@@ -659,23 +661,79 @@
   width: 0;
 }
 
-/* Animation */
+/* Zil Sallanma Animasyonu */
 @keyframes keyframes-fill {
   0% {
     opacity: 0;
   }
-
   25% {
     transform: rotate(25deg);
   }
-
   50% {
     transform: rotate(-20deg) scale(1.2);
   }
-
   75% {
     transform: rotate(15deg);
   }
+}
+
+/* BİLDİRİM NOKTASI (RED DOT) */
+.notification-dot {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  width: 10px;
+  height: 10px;
+  background-color: #ff4141; 
+  border-radius: 50%;
+  border: 2px solid var(--bs-tertiary-bg);
+  z-index: 10;
+  animation: pulse-red 2s infinite;
+}
+
+/* Kırmızı Nokta Nabız Animasyonu */
+@keyframes pulse-red {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(255, 65, 65, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 6px rgba(255, 65, 65, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(255, 65, 65, 0);
+  }
+}
+
+/* BİLDİRİM MENÜSÜ (DROPDOWN) */
+.notification-dropdown {
+  position: absolute;
+  top: 40px; 
+  right: -10px;
+  width: 280px;
+  background-color: var(--bs-body-bg);
+  border: 1px solid var(--bs-border-color);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  padding: 15px;
+  z-index: 1000;
+  cursor: default; /* Menüye tıklayınca zil animasyonu tetiklenmesin */
+}
+
+/* Menünün üzerindeki küçük ok işareti */
+.notification-dropdown::before {
+  content: "";
+  position: absolute;
+  top: -6px;
+  right: 20px;
+  width: 12px;
+  height: 12px;
+  background-color: var(--bs-body-bg);
+  border-top: 1px solid var(--bs-border-color);
+  border-left: 1px solid var(--bs-border-color);
+  transform: rotate(45deg);
 }
 /* Animated Notification Bell Finished */
 
