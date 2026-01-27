@@ -1,16 +1,61 @@
-# React + Vite
+# 💰 Expense Tracker (Harcama Takip Uygulaması)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Kullanıcıların harcamalarını takip edebilecekleri, fişlerini dijital ortamda saklayabilecekleri ve harcama alışkanlıklarını grafiklerle analiz edebilecekleri modern bir "Full-Stack" web uygulaması.
 
-Currently, two official plugins are available:
+[Expense Tracker](https://expense-tracckker.netlify.app/ "Expense Tracker")
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🛠️ Kullanılan Teknolojiler ve Mimari
 
-## React Compiler
+Bu proje, performans, güvenlik ve ölçeklenebilirlik gözetilerek aşağıdaki modern teknoloji yığını (Tech Stack) ile geliştirilmiştir.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 🚀 Hosting & Altyapı
 
-## Expanding the ESLint configuration
+**Netlify:** Projenin CI/CD süreçleri ve barındırma (hosting) hizmeti için kullanılmıştır. GitHub ile entegre çalışarak her güncellemede otomatik dağıtım sağlar.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+**Google Cloud Platform (GCP):** Firebase servislerinin üzerinde çalıştığı temel bulut altyapısıdır.
+
+### ⚛️ Frontend (Ön Yüz)
+
+**React:** Kullanıcı arayüzü oluşturmak için kullanılan JavaScript kütüphanesi.
+
+**Vite:** Hızlı ve modern frontend geliştirme aracı (Build tool).
+
+**React Router DOM:** Sayfalar arası geçiş ve yönlendirme (SPA) yönetimi.
+
+### 🔥 Backend & Bulut Hizmetleri (Firebase)
+
+**Authentication:** Kullanıcı kayıt, giriş ve güvenli oturum yönetimi.
+
+**Cloud Firestore:** NoSQL tabanlı, gerçek zamanlı veritabanı (Fiş ve harcama verileri için).
+
+**Cloud Storage:** Kullanıcıların yüklediği fiş görsellerinin güvenli depolanması.
+
+### 🎨 Tasarım & UI
+
+**Bootstrap 5:** Responsive (mobil uyumlu) ve modern arayüz tasarımı (Grid sistemi, Kartlar).
+
+**Uiverse.io:** Projedeki özel buton animasyonları (Pulse, Logout, Add, Save butonları) için CSS kaynakları.
+
+**React Icons:** Uygulama genelinde kullanılan vektörel ikonlar.
+
+**Framer Motion:** Sadece ViewReports sayfasındaki kart geçiş animasyonları için kullanılmıştır.
+
+**CSS3 & Custom Styles:** Karanlık mod (Dark Mode) entegrasyonu.
+
+### 📊 Veri & İşlevsellik
+
+**Recharts:** Harcama analizleri için dinamik grafikler (Area Chart, Bar Chart).
+
+**React Dropzone:** Fiş yükleme alanında sürükle-bırak (drag & drop) desteği.
+
+**Tesseract.js:** Tarayıcı tabanlı OCR (Optik Karakter Tanıma) ile resimden otomatik fiyat okuma.
+
+**jsPDF:** Aylık harcama raporlarını otomatik PDF olarak oluşturma.
+
+### ⚙️ Mimari Yaklaşım
+
+**Context API:** Global durum yönetimi (AuthContext, ThemeContext, ReportContext).
+
+**Hooks:** useState, useEffect gibi React kancalarının etkin kullanımı.
+
+**Hibrit Veri Yapısı:** Hem dosya tabanlı (resim) hem metin tabanlı (manuel) veri girişini destekler.
