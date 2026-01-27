@@ -1,8 +1,20 @@
-# 🛠️ Kullanılan Teknolojiler ve Kütüphaneler
+# 💰 Expense Tracker (Harcama Takip Uygulaması)
 
-Bu proje, modern web geliştirme standartlarına uygun olarak aşağıdaki teknoloji yığını (Tech Stack) ile geliştirilmiştir.
+Kullanıcıların harcamalarını takip edebilecekleri, fişlerini dijital ortamda saklayabilecekleri ve harcama alışkanlıklarını grafiklerle analiz edebilecekleri modern bir "Full-Stack" web uygulaması.
 
-### ⚛️ Çekirdek (Core)
+[Expense Tracker](https://expense-tracckker.netlify.app/ "Expense Tracker")
+
+## 🛠️ Kullanılan Teknolojiler ve Mimari
+
+Bu proje, performans, güvenlik ve ölçeklenebilirlik gözetilerek aşağıdaki modern teknoloji yığını (Tech Stack) ile geliştirilmiştir.
+
+### 🚀 Hosting & Altyapı
+
+**Netlify:** Projenin CI/CD süreçleri ve barındırma (hosting) hizmeti için kullanılmıştır. GitHub ile entegre çalışarak her güncellemede otomatik dağıtım sağlar.
+
+**Google Cloud Platform (GCP):** Firebase servislerinin üzerinde çalıştığı temel bulut altyapısıdır.
+
+### ⚛️ Frontend (Ön Yüz)
 
 **React:** Kullanıcı arayüzü oluşturmak için kullanılan JavaScript kütüphanesi.
 
