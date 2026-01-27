@@ -676,6 +676,7 @@
     transform: rotate(15deg);
   }
 }
+/* Animated Notification Bell Finished */
 
 /* BİLDİRİM NOKTASI (RED DOT) */
 .notification-dot {
@@ -735,7 +736,21 @@
   border-left: 1px solid var(--bs-border-color);
   transform: rotate(45deg);
 }
-/* Animated Notification Bell Finished */
+
+/* MOBİL BİLDİRİM MENÜSÜ DÜZELTMESİ */
+@media (max-width: 991px) {
+  .notification-dropdown {
+    right: auto;  /* Sağa yaslamayı iptal et */
+    left: -10px;  /* Sola yasla */
+    transform: none;
+  }
+
+  /* Menü üzerindeki küçük ok işaretini de sola taşı */
+  .notification-dropdown::before {
+    right: auto;  /* Sağdan al */
+    left: 18px;   /* Sola, zilin altına denk gelecek şekilde koy */
+  }
+}
 
 /* Animated Search Bar */
 .search-form {
