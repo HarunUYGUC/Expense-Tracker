@@ -1,49 +1,49 @@
-🛠️ Kullanılan Teknolojiler ve Kütüphaneler
+# 🛠️ Kullanılan Teknolojiler ve Kütüphaneler
 
 Bu proje, modern web geliştirme standartlarına uygun olarak aşağıdaki teknoloji yığını (Tech Stack) ile geliştirilmiştir.
 
-⚛️ Çekirdek (Core)
+### ⚛️ Çekirdek (Core)
 
-React: Kullanıcı arayüzü oluşturmak için kullanılan JavaScript kütüphanesi.
+**React:** Kullanıcı arayüzü oluşturmak için kullanılan JavaScript kütüphanesi.
 
-Vite: Hızlı ve modern frontend geliştirme aracı (Build tool).
+**Vite:** Hızlı ve modern frontend geliştirme aracı (Build tool).
 
-React Router DOM: Sayfalar arası geçiş ve yönlendirme (SPA) yönetimi.
+**React Router DOM:** Sayfalar arası geçiş ve yönlendirme (SPA) yönetimi.
 
-🔥 Backend & Bulut Hizmetleri (Firebase)
+### 🔥 Backend & Bulut Hizmetleri (Firebase)
 
-Authentication: Kullanıcı kayıt, giriş ve güvenli oturum yönetimi.
+**Authentication:** Kullanıcı kayıt, giriş ve güvenli oturum yönetimi.
 
-Cloud Firestore: NoSQL tabanlı, gerçek zamanlı veritabanı (Fiş ve harcama verileri için).
+**Cloud Firestore:** NoSQL tabanlı, gerçek zamanlı veritabanı (Fiş ve harcama verileri için).
 
-Cloud Storage: Kullanıcıların yüklediği fiş görsellerinin güvenli depolanması.
+**Cloud Storage:** Kullanıcıların yüklediği fiş görsellerinin güvenli depolanması.
 
-🎨 Tasarım & UI
+### 🎨 Tasarım & UI
 
-Bootstrap 5: Responsive (mobil uyumlu) ve modern arayüz tasarımı (Grid sistemi, Kartlar).
+**Bootstrap 5:** Responsive (mobil uyumlu) ve modern arayüz tasarımı (Grid sistemi, Kartlar).
 
-Uiverse.io: Projedeki özel buton animasyonları (Pulse, Logout, Add, Save butonları) için CSS kaynakları.
+**Uiverse.io:** Projedeki özel buton animasyonları (Pulse, Logout, Add, Save butonları) için CSS kaynakları.
 
-React Icons: Uygulama genelinde kullanılan vektörel ikonlar.
+**React Icons:** Uygulama genelinde kullanılan vektörel ikonlar.
 
-Framer Motion: Sadece ViewReports sayfasındaki kart geçiş animasyonları için kullanılmıştır.
+**Framer Motion:** Sadece ViewReports sayfasındaki kart geçiş animasyonları için kullanılmıştır.
 
-CSS3 & Custom Styles: Karanlık mod (Dark Mode) entegrasyonu.
+**CSS3 & Custom Styles:** Karanlık mod (Dark Mode) entegrasyonu.
 
-📊 Veri & İşlevsellik
+### 📊 Veri & İşlevsellik
 
-Recharts: Harcama analizleri için dinamik grafikler (Area Chart, Bar Chart).
+**Recharts:** Harcama analizleri için dinamik grafikler (Area Chart, Bar Chart).
 
-React Dropzone: Fiş yükleme alanında sürükle-bırak (drag & drop) desteği.
+**React Dropzone:** Fiş yükleme alanında sürükle-bırak (drag & drop) desteği.
 
-Tesseract.js: Tarayıcı tabanlı OCR (Optik Karakter Tanıma) ile resimden otomatik fiyat okuma.
+**Tesseract.js:** Tarayıcı tabanlı OCR (Optik Karakter Tanıma) ile resimden otomatik fiyat okuma.
 
-jsPDF: Aylık harcama raporlarını otomatik PDF olarak oluşturma.
+**jsPDF:** Aylık harcama raporlarını otomatik PDF olarak oluşturma.
 
-⚙️ Mimari Yaklaşım
+### ⚙️ Mimari Yaklaşım
 
-Context API: Global durum yönetimi (AuthContext, ThemeContext, ReportContext).
+**Context API:** Global durum yönetimi (AuthContext, ThemeContext, ReportContext).
 
-Hooks: useState, useEffect gibi React kancalarının etkin kullanımı.
+**Hooks:** useState, useEffect gibi React kancalarının etkin kullanımı.
 
-Hibrit Veri Yapısı: Hem dosya tabanlı (resim) hem metin tabanlı (manuel) veri girişini destekler.
+**Hibrit Veri Yapısı:** Hem dosya tabanlı (resim) hem metin tabanlı (manuel) veri girişini destekler.
