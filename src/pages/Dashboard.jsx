@@ -81,7 +81,6 @@ function Dashboard() {
 
         querySnapshot.forEach((doc) => {
           const data = doc.data();
-          // Fiyatı topla
           total += Number(data.price) || 0;
           count++;
         });
@@ -179,30 +178,35 @@ function Dashboard() {
           )}
           {user && !loadingScans && recentScans.map(scan => (
             <div key={scan.id} className="col-lg-4 col-md-6 mb-4">
-              <div 
-                className="card border-0 shadow-sm h-100"
-                style={{ cursor: 'pointer' }}
-                onClick={() => handleCardClick(scan)}
-              >
-                {scan.imageUrl ? (
-                    <img 
-                      src={scan.imageUrl} 
-                      alt={scan.fileName} 
-                      className="card-img-top" 
-                      style={{ height: '200px', objectFit: 'cover' }} 
-                      onError={(e) => { e.target.src = 'https://placehold.co/600x400?text=No+Image'; }}
-                    />
-                ) : (
-                    <div className="card-img-top d-flex align-items-center justify-content-center bg-body-tertiary text-muted" style={{ height: '200px' }}>
-                        <span className="fs-1">📝</span>
-                    </div>
-                )}
-                <div className="card-body">
-                  <h6 className="card-title text-truncate" title={scan.fileName}>{scan.fileName}</h6>
-                  <p className="card-text text-muted">${Number(scan.price).toFixed(2)}</p>
+              
+              {/* KART YAPISI (Magic Card) */}
+              <div className="magic-card">
+                <div 
+                  className="magic-card-inner card h-100 border-0" 
+                  onClick={() => handleCardClick(scan)}
+                >
+                  {/* Resim varsa göster, yoksa ikon göster */}
+                  {scan.imageUrl ? (
+                      <img 
+                        src={scan.imageUrl} 
+                        alt={scan.fileName} 
+                        className="card-img-top" 
+                        style={{ height: '200px', objectFit: 'cover' }} 
+                        onError={(e) => { e.target.src = 'https://placehold.co/600x400?text=No+Image'; }}
+                      />
+                  ) : (
+                      <div className="card-img-top d-flex align-items-center justify-content-center bg-body-tertiary text-muted" style={{ height: '200px' }}>
+                          <span className="fs-1">📝</span>
+                      </div>
+                  )}
                   
-                  {scan.isManual && <span className="badge bg-secondary me-1">Text</span>}
-                  {!scan.isManual && <span className="badge bg-info text-dark">Scanned</span>}
+                  <div className="card-body">
+                    <h6 className="card-title text-truncate" title={scan.fileName}>{scan.fileName}</h6>
+                    <p className="card-text text-muted">${Number(scan.price).toFixed(2)}</p>
+                    
+                    {scan.isManual && <span className="badge bg-secondary me-1">Text</span>}
+                    {!scan.isManual && <span className="badge bg-info text-dark">Scanned</span>}
+                  </div>
                 </div>
               </div>
             </div>
