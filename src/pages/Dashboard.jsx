@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FaPlus, FaEdit } from 'react-icons/fa';
-import { dashboardData } from '../data/dashboardData';
+import { dashboardData } from '../data/dashboardData'; 
 import ImageModal from '../components/ImageModal';
-import ReceiptDetailModal from '../components/ReceiptDetailModal';
+import ReceiptDetailModal from '../components/ReceiptDetailModal'; 
 import { useAuth } from '../context/AuthContext';
 import { db } from '../firebase';
 import { collection, query, where, onSnapshot, orderBy, limit } from "firebase/firestore";
@@ -62,7 +62,6 @@ function Dashboard() {
   // 2. AYLIK TOPLAM HARCAMAYI HESAPLAMA
   useEffect(() => {
     if (user) {
-      // Bu ayın başlangıç ve bitiş tarihlerini hesapla
       const now = new Date();
       const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
       const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
@@ -218,13 +217,14 @@ function Dashboard() {
         <div className="row mb-4">
           {dashboardData.quickLinks.map(link => (
             <div key={link.id} className="col-lg-4 col-md-6 mb-4">
-              <Link to={link.to} className="text-decoration-none text-dark">
-                <div className="card border-0 shadow-sm p-3 quick-link-card">
-                  <div className="d-flex align-items-center">
-                    <div className="quick-link-icon me-3">
+              
+              <Link to={link.to} className="text-decoration-none">
+                <div className="magic-link-card">
+                  <div className="magic-link-info">
+                    <div className="fs-3 mb-2">
                       <link.icon />
                     </div>
-                    <span className="fw-bold">{link.title}</span>
+                    <p className="magic-link-title mb-0">{link.title}</p>
                   </div>
                 </div>
               </Link>
@@ -271,7 +271,6 @@ function Dashboard() {
               </div>
             </div>
           </div>
-
         </div>
       
       </div> 
