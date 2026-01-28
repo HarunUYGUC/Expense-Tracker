@@ -38,8 +38,6 @@ Bu proje, performans, güvenlik ve ölçeklenebilirlik gözetilerek aşağıdaki
 
 **React Icons:** Uygulama genelinde kullanılan vektörel ikonlar.
 
-**Framer Motion:** Sadece ViewReports sayfasındaki kart geçiş animasyonları için kullanılmıştır.
-
 **CSS3 & Custom Styles:** Karanlık mod (Dark Mode) entegrasyonu.
 
 ### 📊 Veri & İşlevsellik
