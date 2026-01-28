@@ -22,19 +22,23 @@ const ReceiptDetailModal = ({ show, onClose, receipt }) => {
           onClick={e => e.stopPropagation()}
         >
           <div className="modal-content shadow">
-            <div className="modal-header bg-light">
+            
+            {/* DÜZELTME 1: Header Arka Planı */}
+            <div className="modal-header bg-body-tertiary">
               <div>
-                <h5 className="modal-title fw-bold">{receipt.fileName}</h5>
-                <small className="text-muted">{receipt.date}</small>
+                <h5 className="modal-title fw-bold text-body">{receipt.fileName}</h5>
+                <small className="text-body-secondary">{receipt.date}</small>
               </div>
               <button type="button" className="btn-close" onClick={onClose}></button>
             </div>
             
             <div className="modal-body p-4">
-              <h6 className="fw-bold mb-3">Items Purchased</h6>
+              <h6 className="fw-bold mb-3 text-body">Items Purchased</h6>
               <div className="table-responsive">
-                <table className="table table-bordered table-hover">
-                  <thead className="table-light">
+                <table className="table table-bordered table-hover align-middle">
+                  
+                  {/* DÜZELTME 2: Tablo Başlığı */}
+                  <thead className="table-secondary">
                     <tr>
                       <th>Type</th>
                       <th>Brand</th>
@@ -43,6 +47,7 @@ const ReceiptDetailModal = ({ show, onClose, receipt }) => {
                       <th className="text-end">Price</th>
                     </tr>
                   </thead>
+                  
                   <tbody>
                     {receipt.items && receipt.items.map((item, index) => (
                       <tr key={index}>
@@ -50,11 +55,15 @@ const ReceiptDetailModal = ({ show, onClose, receipt }) => {
                         <td>{item.brand}</td>
                         <td>{item.name || '-'}</td>
                         <td>{item.size || '-'}</td>
-                        <td className="text-end fw-bold">${parseFloat(item.price).toFixed(2)}</td>
+                        <td className="text-end fw-bold text-primary">
+                          ${parseFloat(item.price).toFixed(2)}
+                        </td>
                       </tr>
                     ))}
                   </tbody>
-                  <tfoot className="table-light">
+
+                  {/* DÜZELTME 3: Tablo Altı (Footer) */}
+                  <tfoot className="table-secondary">
                     <tr>
                       <td colSpan="4" className="text-end fw-bold">Total</td>
                       <td className="text-end fw-bold fs-5 text-primary">
@@ -62,11 +71,12 @@ const ReceiptDetailModal = ({ show, onClose, receipt }) => {
                       </td>
                     </tr>
                   </tfoot>
+                  
                 </table>
               </div>
             </div>
 
-            <div className="modal-footer border-0">
+            <div className="modal-footer border-0 bg-body-tertiary rounded-bottom">
               <button type="button" className="btn btn-secondary" onClick={onClose}>Close</button>
             </div>
           </div>
