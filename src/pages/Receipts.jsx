@@ -3,6 +3,7 @@ import { useDropzone } from 'react-dropzone';
 import { FaCloudUploadAlt, FaListAlt, FaCheck, FaTimes } from 'react-icons/fa';
 import { db, storage } from '../firebase'; 
 import { useAuth } from '../context/AuthContext'; 
+import { useCurrency } from '../context/CurrencyContext';
 import { ref, uploadBytesResumable, getDownloadURL, deleteObject } from "firebase/storage"; 
 import { collection, addDoc, query, where, onSnapshot, orderBy, deleteDoc, doc, getDoc } from "firebase/firestore"; 
 import ImageModal from '../components/ImageModal';
@@ -11,6 +12,7 @@ import Tesseract from 'tesseract.js';
 
 function Receipts() {
   const { user } = useAuth();
+  const { formatPrice } = useCurrency();
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [statusText, setStatusText] = useState(''); 
@@ -341,7 +343,7 @@ function Receipts() {
                                 <span className="fw-bold text-truncate">{receipt.fileName}</span>
                             </div>
                             <div style={{ flex: 1 }} className="text-muted small">{formatDateTime(receipt.createdAt)}</div>
-                            <div style={{ flex: 1, textAlign: 'right' }} className="fw-bold text-primary">${Number(receipt.price).toFixed(2)}</div>
+                            <div style={{ flex: 1, textAlign: 'right' }} className="fw-bold text-primary">{formatPrice(receipt.price)}</div>
                             <div style={{ width: '50px', display: 'flex', justifyContent: 'flex-end' }}>
                               <button 
                                 className="delete-entry-btn"

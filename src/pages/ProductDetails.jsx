@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useSearchParams, Link } from 'react-router-dom';
 import { FaHistory, FaTag, FaChartLine, FaThumbsUp, FaThumbsDown } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
+import { useCurrency } from '../context/CurrencyContext';
 import { db } from '../firebase';
 import { collection, query, where, onSnapshot, orderBy } from 'firebase/firestore';
 
@@ -11,6 +12,7 @@ function ProductDetails() {
   const brandName = searchParams.get('brand');
   
   const { user } = useAuth();
+  const { formatPrice } = useCurrency();
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [productType, setProductType] = useState(''); // Ürün türü için yeni state
@@ -138,7 +140,7 @@ function ProductDetails() {
                        <h6 className="mb-0 fw-bold">Average Price</h6>
                        <FaChartLine />
                     </div>
-                    <h3 className="fw-bold mb-0">${avgPrice.toFixed(2)}</h3>
+                    <h3 className="fw-bold mb-0">{formatPrice(avgPrice)}</h3>
                     <small className="text-primary-emphasis opacity-75">Based on {history.length} purchases</small>
                  </div>
               </div>
@@ -151,7 +153,7 @@ function ProductDetails() {
                        <FaTag />
                     </div>
                     <h3 className="fw-bold mb-1">
-                        ${minRecord ? minRecord.price.toFixed(2) : '0.00'}
+                        {minRecord ? formatPrice(minRecord.price) : formatPrice(0)}
                     </h3>
                     {minRecord && (
                         <div className="mt-1">
@@ -172,7 +174,7 @@ function ProductDetails() {
                        <FaTag />
                     </div>
                     <h3 className="fw-bold mb-1">
-                        ${maxRecord ? maxRecord.price.toFixed(2) : '0.00'}
+                        {maxRecord ? formatPrice(maxRecord.price) : formatPrice(0)}
                     </h3>
                     {maxRecord && (
                         <div className="mt-1">
@@ -210,7 +212,7 @@ function ProductDetails() {
                         <td className="ps-4 text-body-secondary fw-medium">{record.date}</td>
                         <td className="fw-bold">{record.market}</td>
                         <td>{record.size || '-'}</td>
-                        <td className="text-end pe-4 fw-bold text-primary">${record.price.toFixed(2)}</td>
+                        <td className="text-end pe-4 fw-bold text-primary">{formatPrice(record.price)}</td>
                       </tr>
                     ))}
                     {history.length === 0 && (

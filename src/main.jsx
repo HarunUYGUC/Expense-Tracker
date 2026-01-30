@@ -5,6 +5,7 @@ import App from './App.jsx';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { ReportProvider } from './context/ReportContext'; 
+import { CurrencyProvider } from './context/CurrencyContext';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
@@ -15,9 +16,11 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <BrowserRouter>
       <AuthProvider>
         <ThemeProvider>
-          <ReportProvider> 
-            <App />
-          </ReportProvider>
+          <CurrencyProvider>
+            <ReportProvider> 
+              <App />
+            </ReportProvider>
+          </CurrencyProvider>
         </ThemeProvider>
       </AuthProvider>
     </BrowserRouter>

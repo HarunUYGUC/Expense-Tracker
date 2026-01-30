@@ -1,6 +1,9 @@
 import React from 'react';
+import { useCurrency } from '../context/CurrencyContext';
 
 const ReceiptDetailModal = ({ show, onClose, receipt }) => {
+  const { formatPrice } = useCurrency();
+  
   if (!show || !receipt) return null;
 
   return (
@@ -56,7 +59,7 @@ const ReceiptDetailModal = ({ show, onClose, receipt }) => {
                         <td>{item.name || '-'}</td>
                         <td>{item.size || '-'}</td>
                         <td className="text-end fw-bold text-primary">
-                          ${parseFloat(item.price).toFixed(2)}
+                          {formatPrice(item.price)}
                         </td>
                       </tr>
                     ))}
@@ -67,7 +70,7 @@ const ReceiptDetailModal = ({ show, onClose, receipt }) => {
                     <tr>
                       <td colSpan="4" className="text-end fw-bold">Total</td>
                       <td className="text-end fw-bold fs-5 text-primary">
-                        ${receipt.price.toFixed(2)}
+                        {formatPrice(receipt.price)}
                       </td>
                     </tr>
                   </tfoot>

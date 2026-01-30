@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FaBoxOpen, FaChevronRight } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
+import { useCurrency } from '../context/CurrencyContext';
 import { db } from '../firebase';
 import { collection, query, where, onSnapshot } from 'firebase/firestore';
 
 function Products() {
   const { user } = useAuth();
+  const { formatPrice } = useCurrency();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -146,7 +148,7 @@ function Products() {
                   <div className="mt-auto pt-3 border-top d-flex justify-content-between align-items-end">
                     <div>
                       <small className="text-muted d-block" style={{fontSize: '0.75rem'}}>Last Price</small>
-                      <span className="fs-5 fw-bold text-primary">${product.latestPrice.toFixed(2)}</span>
+                      <span className="fs-5 fw-bold text-primary">{formatPrice(product.latestPrice)}</span>
                     </div>
                     
                     <Link 

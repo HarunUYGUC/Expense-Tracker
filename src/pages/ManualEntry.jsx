@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useCurrency } from '../context/CurrencyContext';
 import { db } from '../firebase';
 import { collection, addDoc, query, where, orderBy, onSnapshot, deleteDoc, doc } from 'firebase/firestore';
 import { FaPlus, FaTrash, FaExclamationTriangle, FaSave, FaListAlt } from 'react-icons/fa';
@@ -8,6 +9,7 @@ import ReceiptDetailModal from '../components/ReceiptDetailModal';
 
 function ManualEntry() {
   const { user } = useAuth();
+  const { formatPrice } = useCurrency();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -362,7 +364,7 @@ function ManualEntry() {
                             </div>
 
                             <div style={{ flex: 1, textAlign: 'right' }} className="fw-bold text-primary">
-                                ${entry.price.toFixed(2)}
+                                {formatPrice(entry.price)}
                             </div>
                             
                             <div style={{ width: '50px', display: 'flex', justifyContent: 'flex-end' }}>

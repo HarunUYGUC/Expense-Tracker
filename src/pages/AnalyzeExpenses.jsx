@@ -5,14 +5,15 @@ import {
   BarChart, Bar, Cell
 } from 'recharts';
 import { useAuth } from '../context/AuthContext';
+import { useCurrency } from '../context/CurrencyContext';
 import { db } from '../firebase';
 import { collection, query, where, onSnapshot, orderBy } from 'firebase/firestore';
 import { Link } from 'react-router-dom';
 
 function AnalyzeExpenses() {
   const { user } = useAuth();
+  const { formatPrice } = useCurrency();
   
-  // STATE'LER
   const [loading, setLoading] = useState(true);
   const [chartData, setChartData] = useState([]); 
   const [categoryData, setCategoryData] = useState([]); 
@@ -33,9 +34,7 @@ function AnalyzeExpenses() {
     }
   };
   
-  // VERİ ÇEKME VE İŞLEME
   useEffect(() => {
-    // Kullanıcı varsa veri çek
     if (user) {
       setLoading(true);
 
@@ -130,10 +129,6 @@ function AnalyzeExpenses() {
     }
   }, [user, timeRange]); 
 
-  const formatCurrency = (value) => {
-    return `$${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-  };
-
   return (
     <div className="dashboard-page-wrapper p-4">
       <div className="container-fluid">
@@ -212,7 +207,9 @@ function AnalyzeExpenses() {
                         </div>
                         
                         <div className="d-flex align-items-baseline mb-4">
-                            <h2 className="fw-bold me-3 mb-0">${totalSpent.toLocaleString(undefined, { minimumFractionDigits: 2 })}</h2>
+                            <h2 className="fw-bold me-3 mb-0">
+                                {formatPrice(totalSpent)}
+                            </h2>
                             <span className="text-success fw-medium d-flex align-items-center">
                                 <FaArrowUp className="me-1 small" /> Total Selected
                             </span>
@@ -230,11 +227,13 @@ function AnalyzeExpenses() {
                                 <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#6c757d'}} />
                                 <YAxis hide={true} />
                                 <CartesianGrid vertical={false} strokeDasharray="3 3" opacity={0.1} />
+                                
                                 <Tooltip 
                                     contentStyle={{ backgroundColor: 'var(--bs-body-bg)', borderRadius: '10px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
                                     itemStyle={{ color: 'var(--bs-body-color)' }}
-                                    formatter={(value) => [formatCurrency(value), "Amount"]} 
+                                    formatter={(value) => [formatPrice(value), "Amount"]} 
                                 />
+                                
                                 <Area type="monotone" dataKey="amount" stroke="#0d6efd" strokeWidth={3} fillOpacity={1} fill="url(#colorAmount)" />
                                 </AreaChart>
                             </ResponsiveContainer>
@@ -262,11 +261,13 @@ function AnalyzeExpenses() {
                                 <BarChart data={categoryData} layout="vertical" margin={{ top: 0, right: 30, left: 20, bottom: 0 }}>
                                     <XAxis type="number" hide={true} />
                                     <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} width={80} tick={{fontSize: 12, fill: '#6c757d'}} />
+                                    
                                     <Tooltip 
                                         cursor={{fill: 'transparent'}} 
                                         contentStyle={{ borderRadius: '8px' }} 
-                                        formatter={(value) => [formatCurrency(value), "Amount"]} 
+                                        formatter={(value) => [formatPrice(value), "Amount"]} 
                                     />
+
                                     <Bar dataKey="amount" fill="#0d6efd" radius={[0, 4, 4, 0]} barSize={20}>
                                         {categoryData.map((entry, index) => (
                                             <Cell key={`cell-${index}`} fill={index % 2 === 0 ? '#0d6efd' : '#6610f2'} />
@@ -296,7 +297,9 @@ function AnalyzeExpenses() {
                         {categoryData.map((item, index) => (
                             <tr key={index}>
                                 <td className="ps-4 fw-bold">{item.name}</td>
-                                <td className="text-end pe-4 fw-medium">${item.amount.toFixed(2)}</td>
+                                <td className="text-end pe-4 fw-medium">
+                                    {formatPrice(item.amount)}
+                                </td>
                             </tr>
                         ))}
                         </tbody>

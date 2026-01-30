@@ -5,11 +5,13 @@ import { dashboardData } from '../data/dashboardData';
 import ImageModal from '../components/ImageModal';
 import ReceiptDetailModal from '../components/ReceiptDetailModal'; 
 import { useAuth } from '../context/AuthContext';
+import { useCurrency } from '../context/CurrencyContext';
 import { db } from '../firebase';
 import { collection, query, where, onSnapshot, orderBy, limit } from "firebase/firestore";
 
 function Dashboard() {
   const { user } = useAuth();
+  const { formatPrice } = useCurrency();
   
   // STATE'LER
   const [recentScans, setRecentScans] = useState([]);
@@ -206,7 +208,7 @@ function Dashboard() {
                   
                   <div className="card-body">
                     <h6 className="card-title text-truncate" title={scan.fileName}>{scan.fileName}</h6>
-                    <p className="card-text text-muted">${Number(scan.price).toFixed(2)}</p>
+                    <p className="card-text text-muted">{formatPrice(scan.price)}</p>
                     
                     {scan.isManual && <span className="badge bg-secondary me-1">Text</span>}
                     {!scan.isManual && <span className="badge bg-info text-dark">Scanned</span>}
@@ -247,7 +249,7 @@ function Dashboard() {
               <div className="card-body">
                 <h6 className="text-muted">Total Spent</h6>
                 <h2 className="display-6 fw-bold text-primary">
-                  ${monthlyStats.totalSpent.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                  {formatPrice(monthlyStats.totalSpent)}
                 </h2>
               </div>
             </div>
@@ -259,7 +261,7 @@ function Dashboard() {
               <div className="card-body">
                 <h6 className="text-muted">Average Spend per Receipt</h6>
                 <h2 className="display-6 fw-bold">
-                  ${monthlyStats.averageSpend.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                  {formatPrice(monthlyStats.averageSpend)}
                 </h2>
               </div>
             </div>

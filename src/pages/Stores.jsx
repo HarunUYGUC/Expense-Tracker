@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FaStore, FaMapMarkerAlt } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
+import { useCurrency } from '../context/CurrencyContext';
 import { db } from '../firebase';
 import { collection, query, where, onSnapshot } from 'firebase/firestore';
 
 function Stores() {
   const { user } = useAuth();
+  const { formatPrice } = useCurrency();
   const [stores, setStores] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -118,7 +120,7 @@ function Stores() {
                   <div className="mt-auto d-flex justify-content-between align-items-center">
                      <div>
                         <small className="text-muted d-block">Total Spent</small>
-                        <span className="fw-bold fs-5">${store.totalSpent.toLocaleString(undefined, {minimumFractionDigits: 2})}</span>
+                        <span className="fw-bold fs-5">{formatPrice(store.totalSpent)}</span>
                      </div>
                      
                      <Link to={`/stores/${encodeURIComponent(store.name)}`} className="btn btn-outline-primary btn-sm">

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { FaHistory, FaArrowLeft, FaStore, FaChartPie, FaMoneyBillWave, FaShoppingBasket, FaReceipt, FaFileAlt } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
+import { useCurrency } from '../context/CurrencyContext';
 import { db } from '../firebase';
 import { collection, query, where, onSnapshot, orderBy } from 'firebase/firestore';
 import ImageModal from '../components/ImageModal';
@@ -10,6 +11,7 @@ import ReceiptDetailModal from '../components/ReceiptDetailModal';
 function StoreDetails() {
   const { storeId } = useParams();
   const { user } = useAuth();
+  const { formatPrice } = useCurrency();
   
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -172,7 +174,7 @@ function StoreDetails() {
                          <h6 className="mb-0 fw-bold">Total Spent</h6>
                          <FaMoneyBillWave />
                       </div>
-                      <h3 className="fw-bold mb-0">${stats.totalSpent.toFixed(2)}</h3>
+                      <h3 className="fw-bold mb-0">{formatPrice(stats.totalSpent)}</h3>
                    </div>
                 </div>
                 <div className="col-md-4">
@@ -181,7 +183,7 @@ function StoreDetails() {
                          <h6 className="mb-0 fw-bold">Average Spend</h6>
                          <FaChartPie />
                       </div>
-                      <h3 className="fw-bold mb-0">${stats.avgSpend.toFixed(2)}</h3>
+                      <h3 className="fw-bold mb-0">{formatPrice(stats.avgSpend)}</h3>
                    </div>
                 </div>
                 
@@ -261,7 +263,7 @@ function StoreDetails() {
                           </td>
                           
                           <td className="text-end pe-4 fw-bold text-primary">
-                              ${Number(record.price).toFixed(2)}
+                              {formatPrice(record.price)}
                           </td>
                         </tr>
                       ))}
