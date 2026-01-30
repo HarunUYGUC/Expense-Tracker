@@ -1,22 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { FaPlus, FaEdit } from 'react-icons/fa';
+import { FaPlus, FaEdit, FaExclamationCircle } from 'react-icons/fa';
 import { dashboardData } from '../data/dashboardData'; 
 import ImageModal from '../components/ImageModal';
 import ReceiptDetailModal from '../components/ReceiptDetailModal'; 
 import { useAuth } from '../context/AuthContext';
-import { useCurrency } from '../context/CurrencyContext';
+import { useCurrency } from '../context/CurrencyContext'; 
 import { db } from '../firebase';
-import { collection, query, where, onSnapshot, orderBy, limit } from "firebase/firestore";
+import { collection, query, where, onSnapshot, orderBy, limit, doc, getDoc } from "firebase/firestore";
 
 function Dashboard() {
   const { user } = useAuth();
-  const { formatPrice } = useCurrency();
+  const { formatPrice } = useCurrency(); 
   
   // STATE'LER
   const [recentScans, setRecentScans] = useState([]);
   const [loadingScans, setLoadingScans] = useState(true);
-  
+  const [budgetLimit, setBudgetLimit] = useState(0);
+
   // Aylık İstatistik State'leri
   const [monthlyStats, setMonthlyStats] = useState({
     totalSpent: 0,
@@ -24,13 +25,32 @@ function Dashboard() {
     averageSpend: 0
   });
 
-  // Modal State'leri
   const [isImageModalShowing, setIsImageModalShowing] = useState(false);
   const [selectedImage, setSelectedImage] = useState({ url: '', alt: '' });
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedReceipt, setSelectedReceipt] = useState(null);
 
-  // 1. SON 3 KAYDI ÇEKME (LİSTE İÇİN)
+  // KULLANICI BÜTÇESİNİ ÇEKME
+  useEffect(() => {
+    if (user) {
+      const fetchBudget = async () => {
+        try {
+          const docRef = doc(db, "users", user.uid);
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists() && docSnap.data().budgetLimit) {
+            setBudgetLimit(Number(docSnap.data().budgetLimit));
+          } else {
+            setBudgetLimit(0);
+          }
+        } catch (error) {
+          console.error("Error fetching budget:", error);
+        }
+      };
+      fetchBudget();
+    }
+  }, [user]);
+
+  // SON 3 KAYDI ÇEKME
   useEffect(() => {
     setLoadingScans(true);
     if (user) {
@@ -55,20 +75,18 @@ function Dashboard() {
 
       return () => unsubscribe();
     } else {
-      // Kullanıcı yoksa listeyi temizle
       setRecentScans([]);
       setLoadingScans(false);
     }
   }, [user]);
 
-  // 2. AYLIK TOPLAM HARCAMAYI HESAPLAMA
+  // AYLIK TOPLAM HARCAMAYI HESAPLAMA
   useEffect(() => {
     if (user) {
       const now = new Date();
       const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
       const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
 
-      // Firestore sorgusu: Bu ayın verileri
       const q = query(
         collection(db, "receipts"),
         where("userId", "==", user.uid),
@@ -98,7 +116,6 @@ function Dashboard() {
 
       return () => unsubscribe();
     } else {
-      // Kullanıcı çıkış yaptıysa istatistikleri SIFIRLA
       setMonthlyStats({
         totalSpent: 0,
         receiptCount: 0,
@@ -113,20 +130,22 @@ function Dashboard() {
     setSelectedImage({ url: imageUrl, alt: imageAlt });
     setIsImageModalShowing(true);
   };
-  const closeImageModal = () => {
-    setIsImageModalShowing(false);
-    setSelectedImage({ url: '', alt: '' });
+  const closeImageModal = () => { setIsImageModalShowing(false); setSelectedImage({ url: '', alt: '' }); };
+  const openDetailModal = (receipt) => { setSelectedReceipt(receipt); setShowDetailModal(true); };
+  const handleCardClick = (scan) => { if (scan.isManual) { openDetailModal(scan); } else { openImageModal(scan.imageUrl, scan.fileName); } };
+  
+  // BÜTÇE İLERLEME HESAPLAMA
+  const calculateProgress = () => {
+    if (budgetLimit <= 0) return 0;
+    const percentage = (monthlyStats.totalSpent / budgetLimit) * 100;
+    return Math.min(percentage, 100); // %100'ü geçmesin (görsel olarak)
   };
-  const openDetailModal = (receipt) => {
-    setSelectedReceipt(receipt);
-    setShowDetailModal(true);
-  };
-  const handleCardClick = (scan) => {
-    if (scan.isManual) {
-      openDetailModal(scan);
-    } else {
-      openImageModal(scan.imageUrl, scan.fileName);
-    }
+
+  const getProgressColor = () => {
+    const p = calculateProgress();
+    if (p < 50) return 'bg-success'; // %50 altı Yeşil
+    if (p < 85) return 'bg-warning'; // %85 altı Sarı
+    return 'bg-danger'; // %85 üstü Kırmızı
   };
   
   return (
@@ -224,20 +243,57 @@ function Dashboard() {
         <div className="row mb-4">
           {dashboardData.quickLinks.map(link => (
             <div key={link.id} className="col-lg-4 col-md-6 mb-4">
-              
-              <Link to={link.to} className="text-decoration-none">
+              <Link to={link.to} className="text-decoration-none text-dark">
                 <div className="magic-link-card">
                   <div className="magic-link-info">
                     <div className="fs-3 mb-2">
                       <link.icon />
                     </div>
-                    <p className="magic-link-title mb-0">{link.title}</p>
+                    <span className="magic-link-title mb-0">{link.title}</span>
                   </div>
                 </div>
               </Link>
             </div>
           ))}
         </div>
+
+        {/* BÜTÇE HEDEFİ */}
+        {budgetLimit > 0 && (
+          <div className="mb-5">
+            <div className="d-flex justify-content-between align-items-end mb-2">
+                <h5 className="mb-0 text-muted">Monthly Budget</h5>
+                <span className="fw-bold">
+                    {formatPrice(monthlyStats.totalSpent)} / {formatPrice(budgetLimit)}
+                </span>
+            </div>
+            
+            <div className="progress" style={{ height: '25px', borderRadius: '15px', backgroundColor: 'var(--bs-tertiary-bg)' }}>
+                <div 
+                    className={`progress-bar progress-bar-striped progress-bar-animated ${getProgressColor()}`} 
+                    role="progressbar" 
+                    style={{ width: `${calculateProgress()}%` }} 
+                >
+                    {calculateProgress().toFixed(0)}%
+                </div>
+            </div>
+            
+            {/* Limit Aşımı Uyarısı */}
+            {monthlyStats.totalSpent > budgetLimit && (
+                <div className="mt-2 text-danger d-flex align-items-center small fw-bold">
+                    <FaExclamationCircle className="me-1" />
+                    You have exceeded your monthly budget!
+                </div>
+            )}
+          </div>
+        )}
+        
+        {/* Bütçe ayarlanmamışsa kullanıcıyı teşvik et */}
+        {user && budgetLimit === 0 && (
+            <div className="alert alert-light border border-dashed mb-5 text-center p-4">
+                <p className="mb-2 text-muted">You haven't set a monthly budget yet.</p>
+                <Link to="/settings" className="btn btn-sm btn-outline-primary rounded-pill px-4">Set Budget Goal</Link>
+            </div>
+        )}
 
         {/* MONTHLY SPENDING */}
         <h3 className="h5 mb-3">Monthly Spending (Current Month)</h3>
@@ -278,6 +334,7 @@ function Dashboard() {
               </div>
             </div>
           </div>
+
         </div>
       
       </div> 
