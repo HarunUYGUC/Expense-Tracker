@@ -186,6 +186,7 @@ function Dashboard() {
                 >
                   {/* Resim varsa göster, yoksa ikon göster */}
                   {scan.imageUrl ? (
+                      // Scanned Receipt (Storage'dan gelen resim)
                       <img 
                         src={scan.imageUrl} 
                         alt={scan.fileName} 
@@ -194,9 +195,13 @@ function Dashboard() {
                         onError={(e) => { e.target.src = 'https://placehold.co/600x400?text=No+Image'; }}
                       />
                   ) : (
-                      <div className="card-img-top d-flex align-items-center justify-content-center bg-body-tertiary text-muted" style={{ height: '200px' }}>
-                          <span className="fs-1">📝</span>
-                      </div>
+                      // Manual Text (public klasöründeki text-img.png)
+                      <img 
+                        src="/text-img.png" 
+                        alt="Manual Entry"
+                        className="card-img-top" 
+                        style={{ height: '200px', objectFit: 'cover' }} 
+                      />
                   )}
                   
                   <div className="card-body">
