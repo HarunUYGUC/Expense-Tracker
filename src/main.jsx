@@ -7,6 +7,9 @@ import { ThemeProvider } from './context/ThemeContext';
 import { ReportProvider } from './context/ReportContext'; 
 import { CurrencyProvider } from './context/CurrencyContext';
 
+import { registerSW } from 'virtual:pwa-register';
+registerSW({ immediate: true });
+
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import './App.css'; 
