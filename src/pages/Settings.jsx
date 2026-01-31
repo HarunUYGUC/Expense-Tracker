@@ -1,20 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { useTheme } from '../context/ThemeContext';
-import { useCurrency } from '../context/CurrencyContext';
-import { useAuth } from '../context/AuthContext';
-import { db } from '../firebase';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { FaGlobe, FaPalette, FaUserCog, FaWallet, FaSave } from 'react-icons/fa';
+import { useCurrency } from '../context/CurrencyContext'; 
+import { useAuth } from '../context/AuthContext'; 
+import { db } from '../firebase'; 
+import { doc, getDoc, setDoc, collection, query, where, getDocs, deleteDoc } from 'firebase/firestore'; 
+import { FaGlobe, FaPalette, FaUserCog, FaWallet, FaSave, FaTrashRestore, FaExclamationTriangle } from 'react-icons/fa'; 
 
 function Settings() {
   const { theme, toggleTheme } = useTheme();
-  const { currency, updateCurrency } = useCurrency();
+  const { currency, updateCurrency } = useCurrency(); 
   const { user } = useAuth();
 
   // Bütçe State'i
   const [budgetInput, setBudgetInput] = useState('');
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
+
+  // Veri Sıfırlama State'i
+  const [resetting, setResetting] = useState(false);
+  const [resetMessage, setResetMessage] = useState('');
 
   // Sayfa yüklendiğinde mevcut bütçeyi çek
   useEffect(() => {
@@ -34,7 +38,7 @@ function Settings() {
     }
   }, [user]);
 
-  // Bütçeyi Kaydet
+  // Bütçeyi Kaydetme
   const handleSaveBudget = async () => {
     if (!user) return;
     setSaving(true);
@@ -47,12 +51,50 @@ function Settings() {
       }, { merge: true });
       
       setMessage('Budget updated successfully!');
-      setTimeout(() => setMessage(''), 3000);
+      setTimeout(() => setMessage(''), 3000); 
     } catch (error) {
       console.error("Error saving budget:", error);
       setMessage('Failed to save budget.');
     } finally {
       setSaving(false);
+    }
+  };
+
+  // VERİ SIFIRLAMA FONKSİYONU
+  const handleResetData = async () => {
+    if (!user) return;
+
+    // Onay İste
+    if (!window.confirm("ARE YOU SURE? \n\nThis will permanently delete ALL your scanned receipts and manual entries. This action cannot be undone.")) {
+      return;
+    }
+
+    setResetting(true);
+    setResetMessage('');
+
+    try {
+      // Kullanıcıya ait tüm fişleri bul
+      const q = query(collection(db, "receipts"), where("userId", "==", user.uid));
+      const querySnapshot = await getDocs(q);
+
+      // Hepsini sil (Promise.all ile paralel silme)
+      const deletePromises = querySnapshot.docs.map((doc) => deleteDoc(doc.ref));
+      await Promise.all(deletePromises);
+
+      // Bütçe ayarını da sıfırla
+      // await setDoc(doc(db, "users", user.uid), { budgetLimit: 0 }, { merge: true });
+      // setBudgetInput('');
+
+      setResetMessage('All data has been successfully deleted.');
+      
+      // Mesajı temizle
+      setTimeout(() => setResetMessage(''), 5000);
+
+    } catch (error) {
+      console.error("Error resetting data:", error);
+      setResetMessage('Failed to reset data. Please try again.');
+    } finally {
+      setResetting(false);
     }
   };
 
@@ -96,7 +138,7 @@ function Settings() {
                 </div>
             </div>
 
-            {/* BÜTÇE HEDEFLERİ */}
+            {/* Bütçe Hedefleri */}
             <div className="col-md-6">
                 <div className="card border-0 shadow-sm h-100">
                     <div className="card-body p-4">
@@ -135,7 +177,7 @@ function Settings() {
                 </div>
             </div>
 
-            {/* GÖRÜNÜM (Karanlık Mod) */}
+            {/* Görünüm */}
             <div className="col-md-6">
                 <div className="card border-0 shadow-sm h-100">
                     <div className="card-body p-4">
@@ -167,18 +209,47 @@ function Settings() {
                 </div>
             </div>
 
-            {/* HESAP */}
+            {/* Hesap Yönetimi */}
             <div className="col-md-6">
                 <div className="card border-0 shadow-sm h-100">
                     <div className="card-body p-4">
-                        <div className="d-flex align-items-center mb-3">
+                        <div className="d-flex align-items-center mb-4">
                             <div className="bg-secondary-subtle text-secondary p-2 rounded me-3">
                                 <FaUserCog className="fs-5" />
                             </div>
-                            <h5 className="card-title mb-0 fw-bold">Account</h5>
+                            <h5 className="card-title mb-0 fw-bold">Account Management</h5>
                         </div>
-                        <p className="text-muted mb-0">Account: <strong>{user?.email}</strong></p>
-                        <p className="text-muted small mt-1">More settings coming soon.</p>
+                        
+                        <div className="mb-4">
+                            <p className="text-muted mb-1 small fw-bold">LOGGED IN AS</p>
+                            <p className="fw-medium fs-5">{user?.email}</p>
+                        </div>
+
+                        <hr className="my-4"/>
+
+                        <div>
+                            <p className="text-danger fw-bold small d-flex align-items-center">
+                                <FaExclamationTriangle className="me-2" /> DANGER ZONE
+                            </p>
+                            <p className="text-muted small mb-3">
+                                This will permanently delete all your scanned receipts and manual entries. Your account will remain active.
+                            </p>
+                            <button 
+                                className="btn btn-outline-danger w-100 d-flex align-items-center justify-content-center"
+                                onClick={handleResetData}
+                                disabled={resetting}
+                            >
+                                {resetting ? (
+                                    <>Processing...</>
+                                ) : (
+                                    <>
+                                        <FaTrashRestore className="me-2" /> Reset All Data
+                                    </>
+                                )}
+                            </button>
+                            {resetMessage && <div className="mt-2 text-center small fw-bold text-success">{resetMessage}</div>}
+                        </div>
+
                     </div>
                 </div>
             </div>
