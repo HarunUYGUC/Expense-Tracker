@@ -4,6 +4,7 @@ import { Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import ScrollToHash from './components/ScrollToHash';
 import DynamicFavicon from './components/DynamicFavicon';
+import NotificationManager from './components/NotificationManager';
 
 import Dashboard from './pages/Dashboard';
 import Receipts from './pages/Receipts';
@@ -24,6 +25,7 @@ function App() {
     <div>
       <ScrollToHash />
       <DynamicFavicon />
+      <NotificationManager />
       
       <Navbar />
       <main>

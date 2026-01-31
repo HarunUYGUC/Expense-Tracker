@@ -4,7 +4,7 @@ import { useCurrency } from '../context/CurrencyContext';
 import { useAuth } from '../context/AuthContext'; 
 import { db } from '../firebase'; 
 import { doc, getDoc, setDoc, collection, query, where, getDocs, deleteDoc } from 'firebase/firestore'; 
-import { FaGlobe, FaPalette, FaUserCog, FaWallet, FaSave, FaTrashRestore, FaExclamationTriangle } from 'react-icons/fa'; 
+import { FaGlobe, FaPalette, FaUserCog, FaWallet, FaSave, FaTrashRestore, FaExclamationTriangle, FaBell, FaClock } from 'react-icons/fa'; 
 
 function Settings() {
   const { theme, toggleTheme } = useTheme();
@@ -20,21 +20,29 @@ function Settings() {
   const [resetting, setResetting] = useState(false);
   const [resetMessage, setResetMessage] = useState('');
 
-  // Sayfa yüklendiğinde mevcut bütçeyi çek
+  // BİLDİRİM VE SAAT STATE'LERİ
+  const [reminderEnabled, setReminderEnabled] = useState(false);
+  const [reminderTime, setReminderTime] = useState('20:00'); // Varsayılan
+
+  // Verileri Çekme
   useEffect(() => {
     if (user) {
-      const fetchBudget = async () => {
+      const fetchData = async () => {
         try {
           const docRef = doc(db, "users", user.uid);
           const docSnap = await getDoc(docRef);
-          if (docSnap.exists() && docSnap.data().budgetLimit) {
-            setBudgetInput(docSnap.data().budgetLimit);
+          
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            if (data.budgetLimit) setBudgetInput(data.budgetLimit);
+            if (data.reminderEnabled !== undefined) setReminderEnabled(data.reminderEnabled);
+            if (data.reminderTime) setReminderTime(data.reminderTime);
           }
         } catch (error) {
-          console.error("Error fetching budget:", error);
+          console.error("Error fetching settings:", error);
         }
       };
-      fetchBudget();
+      fetchData();
     }
   }, [user]);
 
@@ -60,11 +68,64 @@ function Settings() {
     }
   };
 
-  // VERİ SIFIRLAMA FONKSİYONU
+  // BİLDİRİM AÇMA/KAPAMA
+  const handleToggleReminder = async () => {
+    if (!user) return;
+
+    if (!reminderEnabled) {
+      // AÇARKEN: İzin iste
+      if (!("Notification" in window)) {
+        alert("This browser does not support desktop notification");
+        return;
+      }
+
+      const permission = await Notification.requestPermission();
+      
+      if (permission === "granted") {
+        setReminderEnabled(true);
+        saveReminderSettings(true, reminderTime);
+        
+        // Saati ayarladın ve bildirim izni verdin, onay bildirimi göster
+        new Notification("Notifications Enabled!", {
+          body: `We will remind you to track your expenses daily at ${reminderTime}.`,
+          icon: "/pwa-192x192.png"
+        });
+      } else {
+        alert("Permission denied.");
+        setReminderEnabled(false);
+      }
+    } else {
+      // KAPATIRKEN
+      setReminderEnabled(false);
+      saveReminderSettings(false, reminderTime);
+    }
+  };
+
+  // SAAT DEĞİŞTİĞİNDE
+  const handleTimeChange = (e) => {
+    const newTime = e.target.value;
+    setReminderTime(newTime);
+    
+    // Bildirim kapalı olsa bile saati veritabanına kaydet
+    saveReminderSettings(reminderEnabled, newTime);
+  };
+
+  // Firestore Yardımcısı
+  const saveReminderSettings = async (enabled, time) => {
+    try {
+      await setDoc(doc(db, "users", user.uid), {
+        reminderEnabled: enabled,
+        reminderTime: time
+      }, { merge: true });
+    } catch (error) {
+      console.error("Error saving reminder settings:", error);
+    }
+  };
+
+  // Veri Sıfırlama
   const handleResetData = async () => {
     if (!user) return;
 
-    // Onay İste
     if (!window.confirm("ARE YOU SURE? \n\nThis will permanently delete ALL your scanned receipts and manual entries. This action cannot be undone.")) {
       return;
     }
@@ -73,21 +134,12 @@ function Settings() {
     setResetMessage('');
 
     try {
-      // Kullanıcıya ait tüm fişleri bul
       const q = query(collection(db, "receipts"), where("userId", "==", user.uid));
       const querySnapshot = await getDocs(q);
-
-      // Hepsini sil (Promise.all ile paralel silme)
       const deletePromises = querySnapshot.docs.map((doc) => deleteDoc(doc.ref));
       await Promise.all(deletePromises);
 
-      // Bütçe ayarını da sıfırla
-      // await setDoc(doc(db, "users", user.uid), { budgetLimit: 0 }, { merge: true });
-      // setBudgetInput('');
-
       setResetMessage('All data has been successfully deleted.');
-      
-      // Mesajı temizle
       setTimeout(() => setResetMessage(''), 5000);
 
     } catch (error) {
@@ -209,11 +261,60 @@ function Settings() {
                 </div>
             </div>
 
-            {/* Hesap Yönetimi */}
+            {/* Bildirimler */}
             <div className="col-md-6">
                 <div className="card border-0 shadow-sm h-100">
                     <div className="card-body p-4">
                         <div className="d-flex align-items-center mb-4">
+                            <div className="bg-info-subtle text-info-emphasis p-2 rounded me-3">
+                                <FaBell className="fs-5" />
+                            </div>
+                            <h5 className="card-title mb-0 fw-bold">Notifications</h5>
+                        </div>
+
+                        {/* Saat Seçici */}
+                        <div className="mb-3">
+                           <label className="form-label text-muted small fw-bold d-flex align-items-center">
+                              <FaClock className="me-2" /> SET REMINDER TIME
+                           </label>
+                           <input 
+                              type="time" 
+                              className="form-control form-control-lg" 
+                              value={reminderTime}
+                              onChange={handleTimeChange}
+                           />
+                           <div className="form-text mt-1">
+                                Choose the time you want to be notified.
+                           </div>
+                        </div>
+
+                        {/* Hatırlatıcı Switch */}
+                        <div className="d-flex justify-content-between align-items-center pt-3 border-top">
+                            <div>
+                                <span className="d-block fw-medium">Enable Reminder</span>
+                                <small className="text-muted">Turn on daily notifications.</small>
+                            </div>
+                            <div className="switch-container">
+                                <input
+                                    type="checkbox"
+                                    id="reminderToggle"
+                                    className="switch-input"
+                                    checked={reminderEnabled} 
+                                    onChange={handleToggleReminder} 
+                                />
+                                <label htmlFor="reminderToggle" className="switch-label"></label>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            {/* HESAP */}
+            <div className="col-md-12">
+                <div className="card border-0 shadow-sm h-100">
+                    <div className="card-body p-4">
+                        <div className="d-flex align-items-center mb-3">
                             <div className="bg-secondary-subtle text-secondary p-2 rounded me-3">
                                 <FaUserCog className="fs-5" />
                             </div>
@@ -239,13 +340,7 @@ function Settings() {
                                 onClick={handleResetData}
                                 disabled={resetting}
                             >
-                                {resetting ? (
-                                    <>Processing...</>
-                                ) : (
-                                    <>
-                                        <FaTrashRestore className="me-2" /> Reset All Data
-                                    </>
-                                )}
+                                {resetting ? 'Processing...' : <><FaTrashRestore className="me-2" /> Reset All Data</>}
                             </button>
                             {resetMessage && <div className="mt-2 text-center small fw-bold text-success">{resetMessage}</div>}
                         </div>
