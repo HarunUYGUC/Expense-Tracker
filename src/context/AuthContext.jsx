@@ -4,7 +4,8 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
-  onAuthStateChanged
+  onAuthStateChanged,
+  sendPasswordResetEmail
 } from 'firebase/auth';
 
 const AuthContext = createContext(null);
@@ -25,6 +26,10 @@ export const AuthProvider = ({ children }) => {
     return signOut(auth);
   };
 
+  const resetPassword = (email) => {
+    return sendPasswordResetEmail(auth, email);
+  };
+
   // Bu, AuthContext'in kalbidir.
   // Kullanıcının giriş/çıkış durumunu sürekli dinler (sayfa yenilense bile)
   useEffect(() => {
@@ -39,7 +44,7 @@ export const AuthProvider = ({ children }) => {
     };
   }, []);
 
-  const value = { user, signup, login, logout };
+  const value = { user, signup, login, logout, resetPassword };
 
   return (
     <AuthContext.Provider value={value}>
