@@ -1,64 +1,77 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { useAuth } from './AuthContext';
+import { useCurrency } from './CurrencyContext'; 
 import { db } from '../firebase';
 import { collection, query, where, getDocs, orderBy, doc, getDoc, setDoc } from 'firebase/firestore';
 import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable'; 
 
 const ReportContext = createContext(null);
 
 export const ReportProvider = ({ children }) => {
   const { user } = useAuth();
+  const { formatPrice } = useCurrency();
   
-  // State'ler
   const [hasNotification, setHasNotification] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [reportMonthText, setReportMonthText] = useState(""); // Örn: "January 2025"
+  const [reportMonthText, setReportMonthText] = useState("");
 
   // BİLDİRİM KONTROLÜ
   useEffect(() => {
     if (user) {
       const checkNotificationStatus = async () => {
-        const today = new Date();
-        
-        // Geçen ayın tarihini hesapla
-        const prevMonthDate = new Date(today.getFullYear(), today.getMonth() - 1, 1);
-        
-        // Rapor Anahtarı (Veritabanı için ID): "2025-01" (Yıl-Ay)
-        const currentReportKey = `${prevMonthDate.getFullYear()}-${prevMonthDate.getMonth() + 1}`;
-        
-        // Rapor İsmi (Kullanıcı için): "January 2025"
-        const monthName = prevMonthDate.toLocaleString('default', { month: 'long', year: 'numeric' });
-        setReportMonthText(monthName);
-
         try {
-          // Firestore'dan kullanıcının ayarlarını çek
+          const today = new Date();
+          const prevMonthDate = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+          
+          const currentReportKey = `${prevMonthDate.getFullYear()}-${prevMonthDate.getMonth() + 1}`;
+          
+          // Ay İsmi İngilizce (January 2026)
+          const monthName = prevMonthDate.toLocaleString('en-US', { month: 'long', year: 'numeric' });
+          
+          setReportMonthText(monthName);
+
           const userDocRef = doc(db, "users", user.uid);
           const userDocSnap = await getDoc(userDocRef);
 
           let lastSeenReportKey = "";
-          
           if (userDocSnap.exists()) {
-            const userData = userDocSnap.data();
-            lastSeenReportKey = userData.lastSeenReport || "";
+            lastSeenReportKey = userDocSnap.data().lastSeenReport || "";
           }
 
-          // KURAL: Eğer kullanıcının son gördüğü rapor, şu anki rapordan farklıysa BİLDİRİM GÖSTER.
-          // Ay değiştiyse ve görmediyse her gün görsün.
           if (lastSeenReportKey !== currentReportKey) {
             setHasNotification(true);
           } else {
             setHasNotification(false);
           }
-
         } catch (error) {
-          console.error("Error checking notification status:", error);
+          console.error("Bildirim kontrolü hatası:", error);
         }
       };
 
       checkNotificationStatus();
     }
   }, [user]);
+
+  // Font Yükleme
+  const loadFile = async (url) => {
+    try {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      const data = await response.arrayBuffer();
+      
+      let binary = '';
+      const bytes = new Uint8Array(data);
+      const len = bytes.byteLength;
+      for (let i = 0; i < len; i++) {
+        binary += String.fromCharCode(bytes[i]);
+      }
+      return window.btoa(binary);
+    } catch (e) {
+      console.warn("Font indirilemedi:", e);
+      return null;
+    }
+  };
 
   // PDF OLUŞTURMA
   const generateAndDownloadPDF = async () => {
@@ -67,12 +80,10 @@ export const ReportProvider = ({ children }) => {
 
     try {
       const now = new Date();
-      // Geçen Ayın 1'i
       const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-      // Geçen Ayın Son Günü
       const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59);
 
-      const monthName = startOfLastMonth.toLocaleString('default', { month: 'long', year: 'numeric' });
+      const monthName = startOfLastMonth.toLocaleString('en-US', { month: 'long', year: 'numeric' });
 
       // Veritabanı Sorgusu
       const q = query(
@@ -89,8 +100,12 @@ export const ReportProvider = ({ children }) => {
 
       querySnapshot.forEach((doc) => {
         const data = doc.data();
-        receipts.push(data);
-        totalSpent += Number(data.price) || 0;
+        const safeData = {
+          ...data,
+          price: Number(data.price) || 0,
+        };
+        receipts.push(safeData);
+        totalSpent += safeData.price;
       });
 
       if (receipts.length === 0) {
@@ -99,76 +114,116 @@ export const ReportProvider = ({ children }) => {
         return;
       }
 
-      // PDF Oluşturma
+      // PDF BAŞLAT
       const doc = new jsPDF();
+      let fontUsed = 'helvetica'; // Varsayılan
+
+      // Fontları Yükle (Normal ve Bold)
+      const regularFontUrl = 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Regular.ttf';
+      const boldFontUrl = 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Medium.ttf';
+
+      const [fontBase64Regular, fontBase64Bold] = await Promise.all([
+        loadFile(regularFontUrl),
+        loadFile(boldFontUrl)
+      ]);
+
+      if (fontBase64Regular && fontBase64Bold) {
+        try {
+          // Normal Fontu Ekle
+          doc.addFileToVFS('Roboto-Regular.ttf', fontBase64Regular);
+          doc.addFont('Roboto-Regular.ttf', 'Roboto', 'normal');
+
+          // Bold Fontu Ekle
+          doc.addFileToVFS('Roboto-Bold.ttf', fontBase64Bold);
+          doc.addFont('Roboto-Bold.ttf', 'Roboto', 'bold');
+
+          doc.setFont('Roboto'); // Aktif et
+          fontUsed = 'Roboto';
+        } catch (e) {
+          console.error("Font ekleme hatası:", e);
+        }
+      }
+
+      // Başlıklar
       doc.setFontSize(18);
       doc.setTextColor(40);
+      doc.setFont(fontUsed, 'bold'); // Başlık Kalın
       doc.text("Monthly Expense Report", 14, 22);
       
+      doc.setFont(fontUsed, 'normal'); // Normale dön
       doc.setFontSize(11);
       doc.setTextColor(100);
       doc.text(`Period: ${monthName}`, 14, 32);
-      doc.text(`Total Spent: $${totalSpent.toLocaleString(undefined, {minimumFractionDigits: 2})}`, 14, 38);
+      
+      const totalFormatted = formatPrice(totalSpent);
+      doc.text(`Total Spent: ${totalFormatted}`, 14, 38);
 
+      // Tablo Verisi
       const tableColumn = ["Date", "Description", "Type", "Amount"];
       const tableRows = [];
 
       receipts.forEach(receipt => {
         let dateStr = "N/A";
-        if (receipt.createdAt && typeof receipt.createdAt.toDate === 'function') {
-           dateStr = receipt.createdAt.toDate().toLocaleDateString();
-        } else if (receipt.date) {
-           dateStr = receipt.date;
+        try {
+          if (receipt.createdAt && typeof receipt.createdAt.toDate === 'function') {
+             // Tarih formatı Türkçe: 27.01.2026
+             dateStr = receipt.createdAt.toDate().toLocaleDateString('tr-TR');
+          } else if (receipt.date) {
+             dateStr = receipt.date;
+          }
+        } catch {
+          dateStr = "-";
         }
 
         const description = receipt.fileName || receipt.title || "No Description";
         const type = receipt.isManual ? "Manual Entry" : "Scanned Receipt";
-        const price = `$${Number(receipt.price).toFixed(2)}`;
+        const price = formatPrice(receipt.price);
 
         tableRows.push([dateStr, description, type, price]);
       });
 
-      doc.autoTable({
+      // Tabloyu Çiz
+      autoTable(doc, {
         head: [tableColumn],
         body: tableRows,
         startY: 45,
         theme: 'striped',
-        headStyles: { fillColor: [13, 110, 253] },
-        styles: { fontSize: 10, cellPadding: 3 },
+        headStyles: { 
+            fillColor: [13, 110, 253], 
+            font: fontUsed, 
+            fontStyle: 'bold' // Başlıklar Kalın
+        },
+        bodyStyles: { 
+            font: fontUsed, 
+            fontStyle: 'normal' 
+        },
+        styles: { fontSize: 10, cellPadding: 3, font: fontUsed },
       });
-
-      doc.save(`Expense_Report_${monthName.replace(/\s/g, '_')}.pdf`);
-
-      // PDF indirilince okundu olarak işaretle
+      
+      const safeFileName = `Expense_Report_${monthName.replace(/\s/g, '_')}.pdf`;
+      doc.save(safeFileName);
+      
       markAsRead();
 
     } catch (error) {
-      console.error("PDF Generation Error:", error);
-      alert("An error occurred while generating the PDF.");
+      console.error("PDF Generation Error (Critical):", error);
+      alert(`Error generating PDF: ${error.message}`);
     } finally {
       setIsGenerating(false);
     }
   };
 
-  // OKUNDU İŞARETLEME
   const markAsRead = async () => {
     if (!user) return;
-    
-    // UI'da kırmızıyı hemen kaldır
     setHasNotification(false);
-
     try {
       const today = new Date();
-      // Geçen ayın anahtarı (Çünkü rapor geçen aya ait)
       const prevMonthDate = new Date(today.getFullYear(), today.getMonth() - 1, 1);
       const currentReportKey = `${prevMonthDate.getFullYear()}-${prevMonthDate.getMonth() + 1}`;
 
-      // Firestore'a kaydet: "Kullanıcı bu raporu gördü"
-      // 'users' koleksiyonu yoksa otomatik oluşur. 'merge: true' ile diğer verileri silmez.
       await setDoc(doc(db, "users", user.uid), {
         lastSeenReport: currentReportKey
       }, { merge: true });
-
     } catch (error) {
       console.error("Error marking report as read:", error);
     }
