@@ -61,3 +61,61 @@ Bu proje, performans, güvenlik ve ölçeklenebilirlik gözetilerek aşağıdaki
 ### 📱 PWA (Progressive Web App) Desteği
 
 **Mobil Uygulama Gibi Yükleme:** Tarayıcı üzerinden "Ana Ekrana Ekle" diyerek uygulamayı telefonlarına veya masaüstü bilgisayarlarına yükleyebilirler.
+
+
+
+## Önemli Özellikler
+
+### 1. 🏗️ Teknolojik Altyapı ve Mimari
+
+* **Modern Frontend:** **React** ve **Vite** kullanılarak ışık hızında çalışan, modüler bir yapı kuruldu.
+* **Backend-as-a-Service (BaaS):** Sunucu kurulumuyla uğraşmadan **Google Firebase** ekosistemi (Auth, Firestore, Storage) kullanıldı.
+* **Hosting:** Proje **Netlify** üzerinde canlıya alındı.
+* **Global State Management:** `AuthContext`, `CurrencyContext`, `ThemeContext` ve `ReportContext` ile veriler uygulamanın her yerinden yönetilebilir hale getirildi.
+
+### 2. 🔐 Kullanıcı ve Güvenlik
+
+* **Kimlik Doğrulama (Auth):** Kullanıcılar e-posta ve şifre ile güvenli bir şekilde **Kayıt Olup (Sign Up)**, **Giriş Yapabiliyor (Log In)**.
+* **Şifre Sıfırlama:** "Forgot Password" özelliği ile kullanıcılar e-postalarına gelen linkle şifrelerini yenileyebiliyor.
+* **Güvenlik Kuralları:** Firestore ve Storage kuralları (`allow read, write: if request.auth != null;`) ile sadece giriş yapmış kullanıcıların kendi verilerine erişmesi sağlandı.
+
+### 3. 💸 Veri Girişi ve İşleme (Core Features)
+
+* **Akıllı Fiş Tarama (OCR):**
+* Kullanıcı fiş resmini sürükleyip bıraktığında **Tesseract.js** (tarayıcı tabanlı yapay zeka) devreye giriyor.
+* Resimdeki metinleri okuyup "Toplam Tutar"ı otomatik olarak tespit ediyor.
+* Kullanıcıya doğrulama ekranı (Modal) sunarak fiyatı onaylatıyor veya düzelttiriyor.
+* Resim **Firebase Storage**'a, veriler **Firestore**'a kaydediliyor.
+
+* **Gelişmiş Manuel Giriş (Texts):**
+* Kullanıcı fişi olmayan harcamalarını elle girebiliyor.
+* Dinamik form yapısı sayesinde tek seferde birden fazla ürün satırı eklenebiliyor.
+* Girilen veriler tarih, market adı ve detaylarıyla birlikte kaydediliyor.
+
+### 4. 📊 Dashboard ve Analiz
+
+* **Canlı İstatistikler:** Kullanıcının **Bu Ay** ne kadar harcadığı, ortalama fiş tutarı ve toplam fiş sayısı anlık hesaplanıyor.
+* **Bütçe Takibi (Budget Goal):** Kullanıcı ayarlardan bir bütçe belirleyebiliyor. Harcamalar bu limite yaklaştıkça Dashboard'daki ilerleme çubuğu renk değiştiriyor (Yeşil -> Sarı -> Kırmızı).
+* **Grafikler:** `Recharts` kütüphanesi ile harcamaların zamana ve kategorilere göre dağılımı görselleştiriliyor.
+* **Akıllı Listeleme:** "Recent Scans" bölümünde resimli fişler ve metin tabanlı girişler ayırt edici ikonlarla listeleniyor. Tıklanınca türüne göre (Resim veya Tablo) farklı Modallar açılıyor.
+
+### 5. 📄 Raporlama ve Çıktı
+
+* **PDF İndirme:** Kullanıcılar aylık harcama raporlarını tek tıkla **PDF** olarak indirebiliyor.
+* **Türkçe Karakter Desteği:** `jspdf-autotable` ve özel font yükleme (Roboto) sayesinde PDF'lerde "ş, ı, ğ" gibi karakterler bozulmadan çıkıyor.
+* **Otomatik Bildirim:** Her ayın 1'inde, yeni bir rapor hazır olduğunda Navbar'daki zil ikonunda kırmızı bir nokta beliriyor ve kullanıcıya raporu indirmesi hatırlatılıyor.
+
+### 6. 🎨 Tasarım ve UX (Kullanıcı Deneyimi)
+
+* **Karanlık Mod (Dark Mode):** Kullanıcının tercihine göre tüm site (tablolar, kartlar, formlar) koyu temaya geçiyor ve bu tercih hafızada tutuluyor.
+* **Para Birimi Seçimi:** Kullanıcı Dolar ($), Euro (€) veya Türk Lirası (₺) seçebiliyor ve tüm rakamlar buna göre formatlanıyor.
+* **Özel Animasyonlar:**
+* **Magic Cards:** Dashboard kartlarına üzerine gelince parlayan çerçeve efekti.
+* **Pulse Buttons:** "New Scan" ve "New Text" butonlarında dikkat çekici nabız animasyonu.
+* **Animated Inputs:** Arama çubuklarında şık genişleme efektleri.
+
+### 7. 📱 Mobil ve PWA (Progressive Web App)
+
+* **Yüklenebilirlik:** Site, hem telefona hem de bilgisayara bir uygulama gibi yüklenebiliyor (ikonuyla birlikte).
+* **Responsive:** Bootstrap 5 sayesinde site mobilde, tablette ve masaüstünde kusursuz görünüyor (Menüler, tablolar ve kartlar otomatik uyum sağlıyor).
+* **Hatırlatıcı:** Kullanıcı isterse her akşam belirlediği saatte tarayıcı bildirimi ile harcama girmesi hatırlatılıyor.
