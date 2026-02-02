@@ -57,6 +57,7 @@ function Navbar() {
              <li className="nav-item"><NavLink className="nav-link nav-link-animated" to="/dashboard">Dashboard</NavLink></li>
              <li className="nav-item"><NavLink className="nav-link nav-link-animated" to="/receipts">Scans</NavLink></li>
              <li className="nav-item"><NavLink className="nav-link nav-link-animated" to="/texts">Texts</NavLink></li>
+             <li className="nav-item"><NavLink className="nav-link nav-link-animated" to="/subscriptions">Subscriptions</NavLink></li>
              <li className="nav-item"><NavLink className="nav-link nav-link-animated" to="/products">Products</NavLink></li>
              <li className="nav-item"><NavLink className="nav-link nav-link-animated" to="/stores">Stores</NavLink></li>
           </ul>

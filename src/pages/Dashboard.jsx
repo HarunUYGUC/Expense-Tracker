@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { FaPlus, FaEdit, FaExclamationCircle } from 'react-icons/fa';
+import { FaPlus, FaEdit, FaExclamationCircle, FaCalendarCheck } from 'react-icons/fa';
 import { dashboardData } from '../data/dashboardData'; 
 import ImageModal from '../components/ImageModal';
 import ReceiptDetailModal from '../components/ReceiptDetailModal'; 
@@ -18,12 +18,15 @@ function Dashboard() {
   const [loadingScans, setLoadingScans] = useState(true);
   const [budgetLimit, setBudgetLimit] = useState(0);
 
-  // Aylık İstatistik State'leri
+  // Değişken Harcamalar (Fişler ve Manuel Girişler)
   const [monthlyStats, setMonthlyStats] = useState({
     totalSpent: 0,
     receiptCount: 0,
     averageSpend: 0
   });
+
+  // Sabit Giderler (Abonelikler)
+  const [subscriptionTotal, setSubscriptionTotal] = useState(0);
 
   const [isImageModalShowing, setIsImageModalShowing] = useState(false);
   const [selectedImage, setSelectedImage] = useState({ url: '', alt: '' });
@@ -50,37 +53,29 @@ function Dashboard() {
     }
   }, [user]);
 
-  // SON 3 KAYDI ÇEKME
+  // ABONELİKLERİ ÇEKME
   useEffect(() => {
-    setLoadingScans(true);
     if (user) {
       const q = query(
-        collection(db, "receipts"), 
-        where("userId", "==", user.uid),
-        orderBy("createdAt", "desc"),
-        limit(3) 
+        collection(db, "subscriptions"),
+        where("userId", "==", user.uid)
       );
 
-      const unsubscribe = onSnapshot(q, (querySnapshot) => {
-        const scansData = [];
-        querySnapshot.forEach((doc) => {
-          scansData.push({ id: doc.id, ...doc.data() });
+      const unsubscribe = onSnapshot(q, (snapshot) => {
+        let total = 0;
+        snapshot.forEach((doc) => {
+          total += Number(doc.data().price) || 0;
         });
-        setRecentScans(scansData);
-        setLoadingScans(false);
-      }, (error) => { 
-        console.error("Error fetching recent scans: ", error);
-        setLoadingScans(false);
+        setSubscriptionTotal(total);
       });
 
       return () => unsubscribe();
     } else {
-      setRecentScans([]);
-      setLoadingScans(false);
+      setSubscriptionTotal(0);
     }
   }, [user]);
 
-  // AYLIK TOPLAM HARCAMAYI HESAPLAMA
+  // AYLIK HARCAMALARI (RECEIPTS) ÇEKME
   useEffect(() => {
     if (user) {
       const now = new Date();
@@ -124,8 +119,37 @@ function Dashboard() {
     }
   }, [user]);
 
+  // SON 3 KAYDI ÇEKME
+  useEffect(() => {
+    setLoadingScans(true);
+    if (user) {
+      const q = query(
+        collection(db, "receipts"), 
+        where("userId", "==", user.uid),
+        orderBy("createdAt", "desc"),
+        limit(3) 
+      );
 
-  // MODAL FONKSİYONLARI
+      const unsubscribe = onSnapshot(q, (querySnapshot) => {
+        const scansData = [];
+        querySnapshot.forEach((doc) => {
+          scansData.push({ id: doc.id, ...doc.data() });
+        });
+        setRecentScans(scansData);
+        setLoadingScans(false);
+      }, (error) => { 
+        console.error("Error fetching recent scans: ", error);
+        setLoadingScans(false);
+      });
+
+      return () => unsubscribe();
+    } else {
+      setRecentScans([]);
+      setLoadingScans(false);
+    }
+  }, [user]);
+
+  // Modal Fonksiyonları
   const openImageModal = (imageUrl, imageAlt) => {
     setSelectedImage({ url: imageUrl, alt: imageAlt });
     setIsImageModalShowing(true);
@@ -134,27 +158,27 @@ function Dashboard() {
   const openDetailModal = (receipt) => { setSelectedReceipt(receipt); setShowDetailModal(true); };
   const handleCardClick = (scan) => { if (scan.isManual) { openDetailModal(scan); } else { openImageModal(scan.imageUrl, scan.fileName); } };
   
-  // BÜTÇE İLERLEME HESAPLAMA
+  // BÜTÇE HESAPLAMA
+  // Gerçek Toplam = Değişken Harcamalar + Sabit Abonelikler
+  const grandTotal = monthlyStats.totalSpent + subscriptionTotal;
+
   const calculateProgress = () => {
     if (budgetLimit <= 0) return 0;
-    const percentage = (monthlyStats.totalSpent / budgetLimit) * 100;
-    return Math.min(percentage, 100); // %100'ü geçmesin (görsel olarak)
+    const percentage = (grandTotal / budgetLimit) * 100;
+    return Math.min(percentage, 100); 
   };
 
   const getProgressColor = () => {
     const p = calculateProgress();
-    if (p < 50) return 'bg-success'; // %50 altı Yeşil
-    if (p < 85) return 'bg-warning'; // %85 altı Sarı
-    return 'bg-danger'; // %85 üstü Kırmızı
+    if (p < 50) return 'bg-success'; 
+    if (p < 85) return 'bg-warning'; 
+    return 'bg-danger'; 
   };
   
   return (
     <div className="dashboard-page-wrapper p-4">
       
-      <div 
-        className={`dashboard-content-wrapper ${isImageModalShowing || showDetailModal ? 'content-blurred' : ''}`}
-        style={{ transition: 'filter 0.3s ease-in-out' }} 
-      >
+      <div className={`dashboard-content-wrapper ${isImageModalShowing || showDetailModal ? 'content-blurred' : ''}`} style={{ transition: 'filter 0.3s ease-in-out' }}>
         
         {/* BAŞLIK */}
         <div className="d-flex justify-content-between align-items-center mb-4">
@@ -246,9 +270,7 @@ function Dashboard() {
               <Link to={link.to} className="text-decoration-none text-dark">
                 <div className="magic-link-card">
                   <div className="magic-link-info">
-                    <div className="fs-3 mb-2">
-                      <link.icon />
-                    </div>
+                    <div className="fs-3 mb-2"><link.icon /></div>
                     <span className="magic-link-title mb-0">{link.title}</span>
                   </div>
                 </div>
@@ -257,13 +279,16 @@ function Dashboard() {
           ))}
         </div>
 
-        {/* BÜTÇE HEDEFİ */}
+        {/* BÜTÇE DURUMU */}
         {budgetLimit > 0 && (
           <div className="mb-5">
             <div className="d-flex justify-content-between align-items-end mb-2">
-                <h5 className="mb-0 text-muted">Monthly Budget</h5>
-                <span className="fw-bold">
-                    {formatPrice(monthlyStats.totalSpent)} / {formatPrice(budgetLimit)}
+                <div>
+                  <h5 className="mb-0 text-muted">Monthly Budget</h5>
+                </div>
+                <span className="fw-bold fs-5">
+                    {/* Grand Total */}
+                    {formatPrice(grandTotal)} / {formatPrice(budgetLimit)}
                 </span>
             </div>
             
@@ -277,8 +302,7 @@ function Dashboard() {
                 </div>
             </div>
             
-            {/* Limit Aşımı Uyarısı */}
-            {monthlyStats.totalSpent > budgetLimit && (
+            {grandTotal > budgetLimit && (
                 <div className="mt-2 text-danger d-flex align-items-center small fw-bold">
                     <FaExclamationCircle className="me-1" />
                     You have exceeded your monthly budget!
@@ -287,7 +311,6 @@ function Dashboard() {
           </div>
         )}
         
-        {/* Bütçe ayarlanmamışsa kullanıcıyı teşvik et */}
         {user && budgetLimit === 0 && (
             <div className="alert alert-light border border-dashed mb-5 text-center p-4">
                 <p className="mb-2 text-muted">You haven't set a monthly budget yet.</p>
@@ -296,47 +319,59 @@ function Dashboard() {
         )}
 
         {/* MONTHLY SPENDING */}
-        <h3 className="h5 mb-3">Monthly Spending (Current Month)</h3>
-        <div className="row">
-          
-          {/* 1. TOPLAM HARCAMA */}
+        <h3 className="h5 mb-3">Monthly Spending</h3>
+        <div className="row mb-4">
           <div className="col-lg-4 col-md-6 mb-4">
             <div className="card border-0 shadow-sm h-100">
               <div className="card-body">
                 <h6 className="text-muted">Total Spent</h6>
-                <h2 className="display-6 fw-bold text-primary">
-                  {formatPrice(monthlyStats.totalSpent)}
-                </h2>
+                <h2 className="display-6 fw-bold text-primary">{formatPrice(monthlyStats.totalSpent)}</h2>
               </div>
             </div>
           </div>
-
-          {/* 2. ORTALAMA HARCAMA */}
           <div className="col-lg-4 col-md-6 mb-4">
             <div className="card border-0 shadow-sm h-100">
               <div className="card-body">
                 <h6 className="text-muted">Average Spend per Receipt</h6>
-                <h2 className="display-6 fw-bold">
-                  {formatPrice(monthlyStats.averageSpend)}
-                </h2>
+                <h2 className="display-6 fw-bold">{formatPrice(monthlyStats.averageSpend)}</h2>
               </div>
             </div>
           </div>
-
-          {/* 3. FİŞ SAYISI */}
           <div className="col-lg-4 col-md-6 mb-4">
             <div className="card border-0 shadow-sm h-100">
               <div className="card-body">
                 <h6 className="text-muted">Number of Receipts</h6>
-                <h2 className="display-6 fw-bold">
-                  {monthlyStats.receiptCount}
-                </h2>
+                <h2 className="display-6 fw-bold">{monthlyStats.receiptCount}</h2>
               </div>
             </div>
           </div>
-
         </div>
-      
+
+        {/* ABONELİKLER */}
+        <h3 className="h5 mb-3">Subscription Expenses</h3>
+        <div className="row">
+           <div className="col-12">
+              <div className="card border-0 shadow-sm">
+                 <div className="card-body d-flex align-items-center p-4">
+                    <div className="bg-warning-subtle text-warning-emphasis p-3 rounded-circle me-4">
+                       <FaCalendarCheck className="fs-2" />
+                    </div>
+                    <div>
+                       <h6 className="text-muted mb-1">Total Recurring Subscriptions</h6>
+                       <h2 className="display-6 fw-bold text-dark mb-0">
+                          {formatPrice(subscriptionTotal)}
+                       </h2>
+                    </div>
+                    
+                    <div className="ms-auto">
+                       <Link to="/subscriptions" className="btn btn-outline-warning rounded-pill px-4">
+                          Manage Subs
+                       </Link>
+                    </div>
+                 </div>
+              </div>
+           </div>
+        </div>
       </div> 
 
       {/* Modallar */}
