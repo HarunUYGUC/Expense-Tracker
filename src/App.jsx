@@ -5,6 +5,7 @@ import Navbar from './components/Navbar';
 import ScrollToHash from './components/ScrollToHash';
 import DynamicFavicon from './components/DynamicFavicon';
 import NotificationManager from './components/NotificationManager';
+import ScrollToTopButton from './components/ScrollToTopButton';
 
 import Dashboard from './pages/Dashboard';
 import Receipts from './pages/Receipts';
@@ -27,6 +28,7 @@ function App() {
       <ScrollToHash />
       <DynamicFavicon />
       <NotificationManager />
+      <ScrollToTopButton />
       
       <Navbar />
       <main>
