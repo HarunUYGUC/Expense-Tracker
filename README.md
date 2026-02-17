@@ -82,15 +82,19 @@ Bu proje, performans, güvenlik ve ölçeklenebilirlik gözetilerek aşağıdaki
 ### 3. 💸 Veri Girişi ve İşleme (Core Features)
 
 * **Akıllı Fiş Tarama (OCR):**
-* Kullanıcı fiş resmini sürükleyip bıraktığında **Tesseract.js** (tarayıcı tabanlı yapay zeka) devreye giriyor.
-* Resimdeki metinleri okuyup "Toplam Tutar"ı otomatik olarak tespit ediyor.
-* Kullanıcıya doğrulama ekranı (Modal) sunarak fiyatı onaylatıyor veya düzelttiriyor.
-* Resim **Firebase Storage**'a, veriler **Firestore**'a kaydediliyor.
+  Kullanıcı fiş resmini sürükleyip bıraktığında **Tesseract.js** (tarayıcı tabanlı yapay zeka) devreye giriyor.
+  Resimdeki metinleri okuyup "Toplam Tutar"ı otomatik olarak tespit ediyor.
+  Kullanıcıya doğrulama ekranı (Modal) sunarak fiyatı onaylatıyor veya düzelttiriyor.
+  Resim **Firebase Storage**'a, veriler **Firestore**'a kaydediliyor.
 
 * **Gelişmiş Manuel Giriş (Texts):**
-* Kullanıcı fişi olmayan harcamalarını elle girebiliyor.
-* Dinamik form yapısı sayesinde tek seferde birden fazla ürün satırı eklenebiliyor.
-* Girilen veriler tarih, market adı ve detaylarıyla birlikte kaydediliyor.
+  Kullanıcı fişi olmayan harcamalarını elle girebiliyor.
+  Dinamik form yapısı sayesinde tek seferde birden fazla ürün satırı eklenebiliyor.
+  Girilen veriler tarih, market adı ve detaylarıyla birlikte **Firestore**'a kaydediliyor.
+
+* **Aylık Abonelik (Subscriptions):**
+  Kullanıcı aylık aboneliklerini elle girebiliyor. Her ay, "Monthly Budget" bölümüne toplam tutar otomatik olarak ekleniyor.
+  Girilen veriler **Firestore**'a kaydediliyor. Artan tarih sırasına göre sırasıyla sitede gösteriliyor.
 
 ### 4. 📊 Dashboard ve Analiz
 
@@ -104,6 +108,7 @@ Bu proje, performans, güvenlik ve ölçeklenebilirlik gözetilerek aşağıdaki
 * **PDF İndirme:** Kullanıcılar aylık harcama raporlarını tek tıkla **PDF** olarak indirebiliyor.
 * **Türkçe Karakter Desteği:** `jspdf-autotable` ve özel font yükleme (Roboto) sayesinde PDF'lerde "ş, ı, ğ" gibi karakterler bozulmadan çıkıyor.
 * **Otomatik Bildirim:** Her ayın 1'inde, yeni bir rapor hazır olduğunda Navbar'daki zil ikonunda kırmızı bir nokta beliriyor ve kullanıcıya raporu indirmesi hatırlatılıyor.
+* **CSV İndirme:** Kullanıcılar tüm harcama verilerini tek tıkla **CSV** olarak indirebiliyor.
 
 ### 6. 🎨 Tasarım ve UX (Kullanıcı Deneyimi)
 
