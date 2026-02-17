@@ -1,10 +1,10 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { useAuth } from './AuthContext';
-import { useCurrency } from './CurrencyContext'; 
+import { useCurrency } from './CurrencyContext';
 import { db } from '../firebase';
 import { collection, query, where, getDocs, orderBy, doc, getDoc, setDoc } from 'firebase/firestore';
 import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable'; 
+import autoTable from 'jspdf-autotable';
 
 const ReportContext = createContext(null);
 
@@ -25,8 +25,6 @@ export const ReportProvider = ({ children }) => {
           const prevMonthDate = new Date(today.getFullYear(), today.getMonth() - 1, 1);
           
           const currentReportKey = `${prevMonthDate.getFullYear()}-${prevMonthDate.getMonth() + 1}`;
-          
-          // Ay İsmi İngilizce (January 2026)
           const monthName = prevMonthDate.toLocaleString('en-US', { month: 'long', year: 'numeric' });
           
           setReportMonthText(monthName);
@@ -73,6 +71,72 @@ export const ReportProvider = ({ children }) => {
     }
   };
 
+  // CSV DIŞA AKTARMA
+  const exportAllDataToCSV = async () => {
+    if (!user) return;
+    setIsGenerating(true);
+
+    try {
+      const q = query(
+        collection(db, "receipts"),
+        where("userId", "==", user.uid),
+        orderBy("createdAt", "desc")
+      );
+
+      const querySnapshot = await getDocs(q);
+      
+      if (querySnapshot.empty) {
+        alert("No data found to export.");
+        setIsGenerating(false);
+        return;
+      }
+
+      // Başlıkları ayırmak için ';' kullanıyoruz (Excel Türkiye formatı)
+      let csvContent = "Date;Market/Title;Type;Price;Currency;Details\n";
+
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        
+        let dateStr = data.date || "";
+        if (data.createdAt && typeof data.createdAt.toDate === 'function') {
+           dateStr = data.createdAt.toDate().toLocaleDateString('tr-TR'); 
+        }
+
+        const description = `"${(data.fileName || data.title || "No Title").replace(/"/g, '""')}"`;
+        const type = data.isManual ? "Manual Entry" : "Scanned Receipt";
+        
+        const rawPrice = Number(data.price) || 0;
+        // Fiyatın ondalık ayracını ',' yapıyoruz (Excel Türkiye formatı)
+        const priceStr = rawPrice.toFixed(2).replace('.', ',');
+        
+        let details = "";
+        if (data.items && Array.isArray(data.items)) {
+           const itemNames = data.items.map(i => i.name).join(", ");
+           details = `"${itemNames.replace(/"/g, '""')}"`;
+        }
+
+        // Sütunları ayırmak için ';' kullanıyoruz (Excel Türkiye formatı)
+        csvContent += `${dateStr};${description};${type};${priceStr};TRY;${details}\n`;
+      });
+
+      // Excel için BOM (\uFEFF) ekleyerek UTF-8 olarak tanıtıyoruz
+      const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `Expense_Tracker_All_Data_${new Date().toISOString().slice(0,10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+    } catch (error) {
+      console.error("CSV Export Error:", error);
+      alert("Failed to export data.");
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   // PDF OLUŞTURMA
   const generateAndDownloadPDF = async () => {
     if (!user) return;
@@ -85,7 +149,6 @@ export const ReportProvider = ({ children }) => {
 
       const monthName = startOfLastMonth.toLocaleString('en-US', { month: 'long', year: 'numeric' });
 
-      // Veritabanı Sorgusu
       const q = query(
         collection(db, "receipts"),
         where("userId", "==", user.uid),
@@ -114,11 +177,9 @@ export const ReportProvider = ({ children }) => {
         return;
       }
 
-      // PDF BAŞLAT
       const doc = new jsPDF();
-      let fontUsed = 'helvetica'; // Varsayılan
+      let fontUsed = 'helvetica'; 
 
-      // Fontları Yükle (Normal ve Bold)
       const regularFontUrl = 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Regular.ttf';
       const boldFontUrl = 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Medium.ttf';
 
@@ -129,28 +190,25 @@ export const ReportProvider = ({ children }) => {
 
       if (fontBase64Regular && fontBase64Bold) {
         try {
-          // Normal Fontu Ekle
           doc.addFileToVFS('Roboto-Regular.ttf', fontBase64Regular);
           doc.addFont('Roboto-Regular.ttf', 'Roboto', 'normal');
 
-          // Bold Fontu Ekle
           doc.addFileToVFS('Roboto-Bold.ttf', fontBase64Bold);
           doc.addFont('Roboto-Bold.ttf', 'Roboto', 'bold');
 
-          doc.setFont('Roboto'); // Aktif et
+          doc.setFont('Roboto');
           fontUsed = 'Roboto';
         } catch (e) {
           console.error("Font ekleme hatası:", e);
         }
       }
 
-      // Başlıklar
       doc.setFontSize(18);
       doc.setTextColor(40);
-      doc.setFont(fontUsed, 'bold'); // Başlık Kalın
+      doc.setFont(fontUsed, 'bold'); 
       doc.text("Monthly Expense Report", 14, 22);
       
-      doc.setFont(fontUsed, 'normal'); // Normale dön
+      doc.setFont(fontUsed, 'normal');
       doc.setFontSize(11);
       doc.setTextColor(100);
       doc.text(`Period: ${monthName}`, 14, 32);
@@ -158,7 +216,6 @@ export const ReportProvider = ({ children }) => {
       const totalFormatted = formatPrice(totalSpent);
       doc.text(`Total Spent: ${totalFormatted}`, 14, 38);
 
-      // Tablo Verisi
       const tableColumn = ["Date", "Description", "Type", "Amount"];
       const tableRows = [];
 
@@ -166,7 +223,6 @@ export const ReportProvider = ({ children }) => {
         let dateStr = "N/A";
         try {
           if (receipt.createdAt && typeof receipt.createdAt.toDate === 'function') {
-             // Tarih formatı Türkçe: 27.01.2026
              dateStr = receipt.createdAt.toDate().toLocaleDateString('tr-TR');
           } else if (receipt.date) {
              dateStr = receipt.date;
@@ -182,21 +238,13 @@ export const ReportProvider = ({ children }) => {
         tableRows.push([dateStr, description, type, price]);
       });
 
-      // Tabloyu Çiz
       autoTable(doc, {
         head: [tableColumn],
         body: tableRows,
         startY: 45,
         theme: 'striped',
-        headStyles: { 
-            fillColor: [13, 110, 253], 
-            font: fontUsed, 
-            fontStyle: 'bold' // Başlıklar Kalın
-        },
-        bodyStyles: { 
-            font: fontUsed, 
-            fontStyle: 'normal' 
-        },
+        headStyles: { fillColor: [13, 110, 253], font: fontUsed, fontStyle: 'bold' },
+        bodyStyles: { font: fontUsed, fontStyle: 'normal' },
         styles: { fontSize: 10, cellPadding: 3, font: fontUsed },
       });
       
@@ -230,7 +278,7 @@ export const ReportProvider = ({ children }) => {
   };
 
   return (
-    <ReportContext.Provider value={{ hasNotification, reportMonthText, isGenerating, generateAndDownloadPDF, markAsRead }}>
+    <ReportContext.Provider value={{ hasNotification, reportMonthText, isGenerating, generateAndDownloadPDF, exportAllDataToCSV, markAsRead }}>
       {children}
     </ReportContext.Provider>
   );
